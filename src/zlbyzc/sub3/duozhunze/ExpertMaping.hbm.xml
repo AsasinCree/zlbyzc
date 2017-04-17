@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="zlbyzc.sub3.duozhunze.Expert"
+		table="tbexpert">
+		<id name="id" type="java.lang.Integer">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		
+		<property name="name" type="java.lang.String">
+			<column name="varName" length="16" not-null="true" />
+		</property>
+		
+		<property name="Number" type="java.lang.String">
+			<column name="intNumber" length="32" not-null="true" />
+		</property>
+		
+		<property name="Sex" type="java.lang.String">
+			<column name="varSex" length="8" not-null="true" />
+		</property>
+		
+		<property name="Title" type="java.lang.String">
+			<column name="varTitle" length="8" not-null="true" />
+		</property>
+		
+		<property name="WorkUnit" type="java.lang.String">
+			<column name="varWorkUnit" length="64" not-null="true" />
+		</property>
+		
+	</class>
+</hibernate-mapping>

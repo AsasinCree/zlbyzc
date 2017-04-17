@@ -1,28 +1,45 @@
-<!--
-  ~ Hibernate, Relational Persistence for Idiomatic Java
-  ~
-  ~ License: GNU Lesser General Public License (LGPL), version 2.1 or later.
-  ~ See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
-  -->
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+          "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
 <hibernate-configuration>
+
 	<session-factory>
-		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-		<property name="connection.url">jdbc:mysql:///strategy_analysis_system?characterEncoding=UTF-8</property>
-		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
-		<property name="connection.username">root</property>
-		<property name="connection.password"></property>
-		<property name="show_sql">true</property>
-		<property name="format_sql">true</property>
-		<property name="hbm2ddl.auto">update</property>
+
+		<property name="connection.driver_class"><!-- 配置数据库的驱动类 -->
+			com.mysql.jdbc.Driver
+		</property>
+		<property name="connection.url"><!-- 配置数据库的连接路径 -->
+			jdbc:mysql://192.168.0.2:3336/mm
+		</property>
+		<property name="connection.username">root</property><!-- 配置数据库的连接用户名 -->
+		<property name="connection.password">wipm</property><!-- 配置数据库的连接密码，这里密码为空，在这种情况下也可以省略该行配置代码 -->
+		<property name="dialect"><!-- 配置数据库使用的方言 -->
+			org.hibernate.dialect.MySQL5InnoDBDialect
+		</property>
+		<property name="show_sql">true</property><!-- 配置在控制台显示SQL语句 -->
+		<property name="format_sql">true</property><!-- 配置对输出的SQL语句进行格式化 -->
+		<property name="use_sql_comments">true</property><!-- 配置在输出的SQL语句前面添加提示信息 -->
 		
-		<mapping resource="cn/whu/forum/analysis/entities/User.hbm.xml"/>
-		<mapping resource="cn/whu/forum/analysis/entities/SwotActor.hbm.xml"/>
-		<mapping resource="cn/whu/forum/analysis/entities/SwotProperty.hbm.xml"/>
-		<mapping resource="cn/whu/forum/analysis/entities/SwotTask.hbm.xml"/>
-		<mapping resource="cn/whu/forum/analysis/entities/ScenarioTask.hbm.xml"/>
-		<mapping resource="cn/whu/forum/analysis/entities/ScenarioResult.hbm.xml"/>
-		<mapping resource="cn/whu/forum/analysis/entities/ScenarioProperty.hbm.xml"/>
-		<mapping resource="cn/whu/forum/analysis/entities/ScenarioLogic.hbm.xml"/>
+		<property name="hbm2ddl.auto">update</property>
+
+		<mapping resource="zlbyzc/sub3/duozhunze/DesctionMaping.hbm.xml" /><!-- 配置持久化类映射文件 -->
+		<mapping resource="zlbyzc/sub3/duozhunze/Expert_DescitionMaping.hbm.xml" />
+		<mapping resource="zlbyzc/sub3/duozhunze/Expert_fieldMaping.hbm.xml" />
+		<mapping resource="zlbyzc/sub3/duozhunze/ExpertMaping.hbm.xml" />
+		<mapping resource="zlbyzc/sub3/duozhunze/FieldMaping.hbm.xml" />
+	 	<mapping resource="zlbyzc/sub3/duozhunze/RuleMaping.hbm.xml" />
+		<mapping resource="zlbyzc/sub3/duozhunze/SchemeMaping.hbm.xml" />
+		
+		<mapping resource="zlbyzc/sub3/analysis/entities/User.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/SwotActor.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/SwotProperty.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/SwotTask.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/ScenarioTask.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/ScenarioResult.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/ScenarioProperty.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/ScenarioLogic.hbm.xml"/>
 	</session-factory>
+
 </hibernate-configuration>

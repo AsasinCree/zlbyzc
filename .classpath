@@ -1,19 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="libs/jgoodies-common-1.8.1.jar"/>
+	<classpathentry kind="lib" path="libs/jgoodies-forms-1.9.0.jar"/>
+	<classpathentry kind="lib" path="libs/jgoodies-looks-2.7.0.jar"/>
+	<classpathentry kind="lib" path="libs/pgslookandfeel-1.1.2.jar"/>
+	<classpathentry kind="lib" path="libs/squareness.jar"/>
+	<classpathentry kind="lib" path="libs/flamingo-7.3.1-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/zlbyzc/doc/jar/flamingo-7.3.1-SNAPSHOT-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/laf-plugin-7.3.1-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/zlbyzc/doc/jar/laf-plugin-7.3.1-SNAPSHOT-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/laf-widget-7.3.1-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/zlbyzc/doc/jar/laf-widget-7.3.1-SNAPSHOT-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/substance-7.3.1-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/zlbyzc/doc/jar/substance-7.3.1-SNAPSHOT-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/substance-flamingo-7.3.1-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/zlbyzc/doc/jar/substance-flamingo-7.3.1-SNAPSHOT-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/trident-7.3.1-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="Lib/mysql-connector-java-5.1.13-bin.jar"/>
-	<classpathentry kind="lib" path="Lib/antlr-2.7.7.jar"/>
-	<classpathentry kind="lib" path="Lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="Lib/geronimo-jta_1.1_spec-1.1.1.jar"/>
-	<classpathentry kind="lib" path="Lib/hibernate-commons-annotations-5.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="Lib/hibernate-core-5.0.0.CR4.jar" sourcepath="C:/Users/Liu/.m2/repository/org/hibernate/hibernate-core/5.0.0.CR4/hibernate-core-5.0.0.CR4-sources.jar"/>
-	<classpathentry kind="lib" path="Lib/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="Lib/jandex-1.2.2.Final.jar"/>
-	<classpathentry kind="lib" path="Lib/javassist-3.18.1-GA.jar"/>
-	<classpathentry kind="lib" path="Lib/jboss-logging-3.3.0.Final.jar"/>
-	<classpathentry kind="lib" path="JDatePicker.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="libs/jna-4.2.2.jar"/>
+	<classpathentry kind="lib" path="libs/jna-platform-4.2.2.jar"/>
+	<classpathentry kind="lib" path="libs/license.jar"/>
+	<classpathentry kind="lib" path="libs/Jama-1.0.3.jar"/>
+	<classpathentry kind="lib" path="libs/JDatePicker.jar"/>
+	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.38-bin.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="libs/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libs/jboss-logging-annotations-1.2.0.Beta1.jar"/>
+	<classpathentry kind="lib" path="libs/jboss-transaction-api_1.2_spec-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="libs/javassist-3.18.1-GA.jar"/>
+	<classpathentry kind="lib" path="libs/antlr-2.7.7.jar"/>
+	<classpathentry kind="lib" path="libs/geronimo-jta_1.1_spec-1.1.1.jar"/>
+	<classpathentry kind="lib" path="libs/jandex-1.2.2.Final.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-commons-annotations-5.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-core-5.0.0.CR4.jar"/>
+	<classpathentry kind="lib" path="libs/jboss-logging-3.3.0.Final.jar"/>
+	<classpathentry kind="lib" path="libs/mgraphEx.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

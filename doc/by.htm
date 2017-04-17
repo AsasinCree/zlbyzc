@@ -1,0 +1,346 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=gb2312">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:宋体;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@宋体";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	font-size:14.0pt;
+	font-family:"Calibri",sans-serif;}
+.MsoChpDefault
+	{font-family:"Calibri",sans-serif;}
+ /* Page Definitions */
+ @page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	layout-grid:15.6pt;}
+div.WordSection1
+	{page:WordSection1;}
+-->
+   body {
+        /* hide the horizontal scrollbar */
+        overflow-x: hidden;
+    }
+    /* make the scrollbar a little wider */
+    ::-webkit-scrollbar {
+        width: 13px;
+    }
+    ::-webkit-scrollbar-track  {
+        background-color: #e2e2e2;
+    }
+    /* the slider or "thumb" has some rounded edges and a shadow and it's a little translucent */
+    ::-webkit-scrollbar-thumb {
+        border-radius: 6px;
+        box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+        background: rgba(159,216,239,0.8);
+    }
+    /* I don't like the scrollbar to be so tiny on large documents - hence I set a minimum height */
+    ::-webkit-scrollbar-thumb:vertical {
+        min-height: 100px;
+    }
+    /* Use a more translucent slider when the window is inactive */
+    ::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(159,216,239,0.2); 
+    } 
+</style>
+
+</head>
+
+<body lang=ZH-CN style='text-justify-trim:punctuation' bgcolor="#e2e2e2">
+
+<div class=WordSection1 style='layout-grid:15.6pt'>
+
+<p class=MsoNormal style='line-height:150%'><b><span
+ lang=EN-US style='font-size:15.0pt;line-height:150%'>3.2.3</span></b><b><span
+lang=EN-US style='font-size:15.0pt;line-height:150%'>.2 </span></b><b><span
+style='font-size:15.0pt;line-height:150%;font-family:宋体'>博弈模型子系统（编号</span></b><b><span
+lang=EN-US style='font-size:15.0pt;line-height:150%'>3-2</span></b><b><span
+style='font-size:15.0pt;line-height:150%;font-family:宋体'>）（含</span></b><b><span
+lang=EN-US style='font-size:15.0pt;line-height:150%'>4</span></b><b><span
+style='font-size:15.0pt;line-height:150%;font-family:宋体'>个部分）</span></b></p>
+
+<p class=MsoNormal style='margin-left:21.1pt;text-indent:-21.1pt;line-height:
+150%'><b><span
+ lang=EN-US>3.2.3</span></b><b><span lang=EN-US>.2.1 </span></b><b><span
+style='font-family:宋体'>完全信息静态博弈（编号</span><span lang=EN-US>3-2-1</span></b><b><span
+style='font-family:宋体'>）</span></b></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(a). </span><span
+style='font-family:宋体'>功能说明：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>完全信息静态博弈指各参与人对彼此的策略集、支付函数有准确了解，博弈行为同时进行的博弈。有些实际博弈的决策不是在绝对时间意义上的同时，但决策的时间先后差别跟博弈结果没有关系，也可看成是同时进行的博弈。该子模块根据参与博弈的参与者、策略集和支付函数建立完全信息静态博弈模型，对输入的策略集求出符合纳什均衡的策略组合。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>(b). </span><span style='font-family:宋体'>输入：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>模块输入内容包括参与者集合</span><span
+lang=EN-US>C={C<sub>1</sub>,…,C<sub>n</sub>}</span><span style='font-family:
+宋体'>，策略集合</span><span lang=EN-US>S= {S<sub>1</sub>,…,S<sub>m</sub>}</span><span
+style='font-family:宋体'>，收益集合</span><span lang=EN-US>U={U<sub>1</sub>(s<sub>1</sub>),…,U<sub>n</sub>(s<sub>n</sub>)}</span><span
+style='font-family:宋体'>，其中</span><span lang=EN-US>U<sub>i</sub></span><span
+style='font-family:宋体'>表示所有参与者在策略组合</span><span lang=EN-US>s<sub>i</sub></span><span
+style='font-family:宋体'>状况下的收益组合。以图</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>为例，</span><span lang=EN-US> (</span><span
+style='font-family:宋体'>收益</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>，收益</span><span lang=EN-US>2)</span><span
+style='font-family:宋体'>表示在策略组合</span><span lang=EN-US>(</span><span
+style='font-family:宋体'>策略</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>，策略</span><span lang=EN-US>1)</span><span
+style='font-family:宋体'>状况下的收益组合。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>为了提高输入模块的易用性能，输入时可调用图形化输入工具。通过添加结点的方式输入参与者集合，通过添加有向边的方式输入策略集合，通过添加集合的方式输入收益组合，图形化输入界面可参考图</span><span
+lang=EN-US>1</span><span style='font-family:宋体'>。</span></p>
+
+<p class=MsoNormal style='margin-left:22.5pt;text-indent:-22.5pt;line-height:
+150%'><span lang=EN-US style='font-size:15.0pt;line-height:150%'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US><img width=408 height=412 id="Picture 1"
+src="3.files/image001.png"></span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:14.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span style='font-size:10.5pt;line-height:150%;font-family:宋体'>图</span><span
+lang=EN-US style='font-size:10.5pt;line-height:150%'>1 </span><span
+style='font-size:10.5pt;line-height:150%;font-family:宋体'>完全信息静态博弈</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>(c). </span><span style='font-family:宋体'>处理：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>先排除严格劣策略，遍历其它策略组合，若某个策略组合中每个参与者的策略都是对其他参与者的最优策略，该策略组合即为符合纳什均衡的策略组合。用风险、收益、稳健性等指标对纳什均衡进行精炼。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>(d). </span><span style='font-family:宋体'>输出：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>纳什均衡及相应的精炼结果排序。</span></p>
+
+<p class=MsoNormal style='line-height:150%'><b><span
+ lang=EN-US>3.2.3</span></b><b><span lang=EN-US>.2.2</span></b><b><span
+style='font-family:宋体'>完全信息动态博弈（编号</span><span lang=EN-US>3-2-2</span></b><b><span
+style='font-family:宋体'>）</span></b></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(a). </span><span
+style='font-family:宋体'>功能说明：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>完全信息动态博弈与完全信息静态博弈的不同之处在于博弈参与者的行动存在先后顺序。从信息角度上，完全信息动态博弈与完全信息静态博弈类似，博弈参与者对博弈结构、博弈顺序、双方收益等信息都完全了解。该子模块根据参与博弈的参与者、策略集和支付函数建立完全信息动态博弈模型，对输入的策略集求出符合子博弈精炼纳什均衡的策略组合。</span></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(b). </span><span
+style='font-family:宋体'>输入：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>模块输入内容包括参与者集合</span><span lang=EN-US>C={C<sub>1</sub>,…,C<sub>n</sub>}</span><span
+style='font-family:宋体'>，策略集合</span><span lang=EN-US>S= {S<sub>1</sub>,…,S<sub>m</sub>}</span><span
+style='font-family:宋体'>，收益集合</span><span lang=EN-US>U={(U<sub>1</sub>,T<sub>1</sub>
+)(s<sub>1</sub>),…, (U<sub>n</sub>,T<sub>n</sub> )(s<sub>n</sub>)}</span><span
+style='font-family:宋体'>，其中</span><span lang=EN-US>U<sub>i</sub></span><span
+style='font-family:宋体'>表示所有参与者在策略组合</span><span lang=EN-US>s<sub>i</sub></span><span
+style='font-family:宋体'>状况下的收益组合</span><span lang=EN-US>, T<sub>i</sub></span><span
+style='font-family:宋体'>表示该收益组合在博弈中的先后顺序。以图</span><span lang=EN-US>2</span><span
+style='font-family:宋体'>为例，</span><span lang=EN-US> (</span><span
+style='font-family:宋体'>收益</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>，收益</span><span lang=EN-US>2)</span><span
+style='font-family:宋体'>表示在策略组合</span><span lang=EN-US>(</span><span
+style='font-family:宋体'>策略</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>，策略</span><span lang=EN-US>1)</span><span
+style='font-family:宋体'>状况下的收益组合。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>为了提高输入模块的易用性能，输入时可调用图形化输入工具。通过添加结点的方式输入参与者集合，通过添加有向边的方式输入策略集合，通过添加集合的方式输入收益组合，图形化输入界面可参考图</span><span
+lang=EN-US>2</span><span style='font-family:宋体'>。</span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span lang=EN-US><img
+width=452 height=383 id="Picture 2" src="3.files/image002.png"></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-size:10.5pt;font-family:宋体'>图</span><span lang=EN-US
+style='font-size:10.5pt'>2 </span><span style='font-size:10.5pt;font-family:
+宋体'>完全信息动态博弈</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>因为完全信息动态博弈参与者的行动存在先后顺序，根结点表示参与者</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>先行动，当参与者</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>决策后，才轮到参与者</span><span lang=EN-US>2</span><span
+style='font-family:宋体'>决策。</span></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(c). </span><span
+style='font-family:宋体'>处理：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>求解完全信息动态博弈可采用逆向归纳法，首先找到博弈顺序在最后的子博弈，找到子博弈中博弈参与者的策略选择，然后按博弈顺序由后向前逆向归纳，直到博弈树的初始结点，从而找到博弈的子博弈精炼纳什均衡。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>(d). </span><span style='font-family:宋体'>输出：</span></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;
+</span><span style='font-family:宋体'>策略组合</span><span lang=EN-US>S<sub>i</sub></span><span
+style='font-family:宋体'>和相应的收益组合</span><span lang=EN-US>U<sub>i</sub></span><span
+style='font-family:宋体'>。</span></p>
+
+<p class=MsoNormal style='line-height:150%'><b><span
+ lang=EN-US>3.2.3</span></b><b><span lang=EN-US>.2.3</span></b><b><span
+style='font-family:宋体'>不完全信息静态博弈（编号</span><span lang=EN-US>3-2-3</span></b><b><span
+style='font-family:宋体'>）</span></b></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(a). </span><span
+style='font-family:宋体'>功能说明：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; &nbsp;</span><span style='font-family:宋体'>不完全信息静态博弈与完全信息静态博弈的不同之处在于至少有一个参与者不知道其他参与者的支付函数。在不完全信息静态博弈中，某些博弈方虽然不能确定其他博弈方在一定策略组合下的收益，但至少知道其他博弈方的收益有哪些可能的结果，而哪种可能的结果会出现则取决于其他博弈方属于哪种类型。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>为了处理不完全信息，可采用海萨尼转换把不完全信息静态博弈转换为完全信息动态博弈。首先引入虚拟参与者——自然，自然首先行动，选择决定参与者的类型，各参与者知道自己的类型，其他参与者不知道。但各参与者所属类型的概率分布却是共同知识。以对参与者类型的概率分析代替对参与者确切行动的分析，这样的转换就是海萨尼转换。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>该子模块根据参与博弈的参与者、策略集和支付函数，采用海萨尼转换建立不完全信息静态博弈模型，对输入的策略集求出符合贝叶斯纳什均衡的策略组合。</span></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(b). </span><span
+style='font-family:宋体'>输入：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>模块输入内容包括参与者集合</span><span lang=EN-US>C={C<sub>1</sub>,…,C<sub>n</sub>}</span><span
+style='font-family:宋体'>，策略集合</span><span lang=EN-US>S= {S<sub>1</sub>,…,S<sub>m</sub>}</span><span
+style='font-family:宋体'>，收益集合</span><span lang=EN-US>U={(U<sub>1</sub>,P<sub>1</sub>
+)(s<sub>1</sub>),…, (U<sub>n</sub>,P<sub>n</sub> )(s<sub>n</sub>)}</span><span
+style='font-family:宋体'>，其中</span><span lang=EN-US>U<sub>i</sub></span><span
+style='font-family:宋体'>表示所有参与者在策略组合</span><span lang=EN-US>s<sub>i</sub></span><span
+style='font-family:宋体'>状况下的收益组合</span><span lang=EN-US>, P<sub>i</sub></span><span
+style='font-family:宋体'>表示该收益组合在博弈中的概率。以图</span><span lang=EN-US>3</span><span
+style='font-family:宋体'>为例，</span><span lang=EN-US> (</span><span
+style='font-family:宋体'>收益</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>，收益</span><span lang=EN-US>2)</span><span
+style='font-family:宋体'>表示在概率为</span><span lang=EN-US>P<sub>1</sub></span><span
+style='font-family:宋体'>的状况下策略组合</span><span lang=EN-US>(</span><span
+style='font-family:宋体'>策略</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>，策略</span><span lang=EN-US>1)</span><span
+style='font-family:宋体'>的收益组合。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>为了提高输入模块的易用性能，输入时可调用图形化输入工具。通过添加结点的方式输入参与者集合，通过添加有向边的方式输入策略集合，通过添加集合的方式输入收益组合，图形化输入界面可参考图</span><span
+lang=EN-US>3</span><span style='font-family:宋体'>。</span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span lang=EN-US><img
+width=554 height=367 id="Picture 3" src="3.files/image003.png"></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='font-size:10.5pt;font-family:宋体'>图</span><span lang=EN-US
+style='font-size:10.5pt'>3 </span><span style='font-size:10.5pt;font-family:
+宋体'>不完全信息静态博弈</span></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(c). </span><span
+style='font-family:宋体'>处理：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>求解不完全信息静态博弈先求解单个参与者的最优策略。对单个参与者，首先计算己方各种策略在其他参与者类型的概率分布下能给自己带来的期望收益，找出其中最大期望收益对应的策略就是己方的最优策略。所有参与者的最优策略组合就是贝叶斯纳什均衡。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>(d). </span><span style='font-family:宋体'>输出：</span></p>
+
+<p class=MsoNormal style='text-indent:24.0pt;line-height:150%'><span
+style='font-family:宋体'>策略组合</span><span lang=EN-US>S<sub>i</sub></span><span
+style='font-family:宋体'>和相应的收益组合</span><span lang=EN-US>U<sub>i</sub></span><span
+style='font-family:宋体'>。</span></p>
+
+<p class=MsoNormal style='line-height:150%'><b><span
+ lang=EN-US>3.2.3</span></b><b><span lang=EN-US>.2.4</span></b><b><span
+style='font-family:宋体'>不完全信息动态博弈（编号</span><span lang=EN-US>3-2-4</span></b><b><span
+style='font-family:宋体'>）</span></b></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(a). </span><span
+style='font-family:宋体'>功能说明：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; &nbsp;</span><span style='font-family:宋体'>不完全信息动态博弈的参与者是类型依存型的，每个参与者的策略都传递有关自己类型的信息，后行动者可以通过观察先行动者的策略来推断自己的最优策略。先行动者预测到自己的策略被后行动者利用，就会设法传递对自己最有利的信息。不完全信息动态博弈过程不仅是参与者选择策略的过程，也是参与者不断修正信念（概率分布）的过程。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:7.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp; </span><span style='font-family:宋体'>该子模块根据参与博弈的参与者、策略集和支付函数，建立不完全信息动态博弈模型，对输入的策略集求出符合精炼贝叶斯均衡的策略组合。</span></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>(b). </span><span
+style='font-family:宋体'>输入：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>模块输入内容包括参与者集合</span><span lang=EN-US>C={C<sub>1</sub>,…,C<sub>n</sub>}</span><span
+style='font-family:宋体'>，策略集合</span><span lang=EN-US>S= {S<sub>1</sub>,…,S<sub>m</sub>}</span><span
+style='font-family:宋体'>，收益集合</span><span lang=EN-US>U={(U<sub>1</sub>,P<sub>1</sub>
+)(s<sub>1</sub>),…, (U<sub>n</sub>,P<sub>n</sub> )(s<sub>n</sub>)}</span><span
+style='font-family:宋体'>，其中</span><span lang=EN-US>U<sub>i</sub></span><span
+style='font-family:宋体'>表示所有参与者在策略组合</span><span lang=EN-US>s<sub>i</sub></span><span
+style='font-family:宋体'>状况下的收益组合</span><span lang=EN-US>, P<sub>i</sub></span><span
+style='font-family:宋体'>表示该收益组合在博弈中的先验概率。以图</span><span lang=EN-US>3</span><span
+style='font-family:宋体'>为例，</span><span lang=EN-US> (</span><span
+style='font-family:宋体'>收益</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>，收益</span><span lang=EN-US>2)</span><span
+style='font-family:宋体'>表示在概率为</span><span lang=EN-US>P<sub>1</sub></span><span
+style='font-family:宋体'>的状况下策略组合</span><span lang=EN-US>(</span><span
+style='font-family:宋体'>策略</span><span lang=EN-US>1</span><span
+style='font-family:宋体'>，策略</span><span lang=EN-US>1)</span><span
+style='font-family:宋体'>的收益组合。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>为了提高输入模块的易用性能，输入时可调用图形化输入工具。通过添加结点的方式输入参与者集合，通过添加有向边的方式输入策略集合，通过添加集合的方式输入收益组合，图形化输入界面可参考图</span><span
+lang=EN-US>4</span><span style='font-family:宋体'>。</span></p>
+
+<p class=MsoNormal><span lang=EN-US><img width=554 height=367 id="Picture 4"
+src="3.files/image003.png"></span></p>
+
+<p class=MsoNormal style='text-indent:157.5pt'><span style='font-size:10.5pt;
+font-family:宋体'>图</span><span lang=EN-US style='font-size:10.5pt'>4 </span><span
+style='font-size:10.5pt;font-family:宋体'>不完全信息动态博弈</span></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>&nbsp;(c). </span><span
+style='font-family:宋体'>处理：</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style='font-family:宋体'>不完全信息动态博弈的解需要满足精炼贝叶斯均衡。在博弈开始前给定的概率分布（信念）被称为先验概率。精炼贝叶斯均衡要求给定概率分布和其他参与者的后续策略时，参与者的行动是最优的。每个参与者都会根据贝叶斯法则和均衡战略修正后验概率。根据此要求即可解出符合精炼贝叶斯均衡的策略组合。</span></p>
+
+<p class=MsoNormal style='margin-left:21.0pt;text-indent:-21.0pt;line-height:
+150%'><span lang=EN-US>(d). </span><span style='font-family:宋体'>输出：</span></p>
+
+<p class=MsoNormal style='line-height:150%'><span lang=EN-US>&nbsp;&nbsp; </span><span
+style='font-family:宋体'>策略组合</span><span lang=EN-US>S<sub>i</sub></span><span
+style='font-family:宋体'>和相应的收益组合</span><span lang=EN-US>U<sub>i</sub></span><span
+style='font-family:宋体'>。</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+</div>
+<h3 id="战略统计分析子系统用户交互系统"><a name="战略统计分析子系统用户交互系统" href="#战略统计分析子系统用户交互系统"></a>战略统计分析子系统用户交互系统</h3><h4 id="战略统计分析子系基本功能需求"><a name="战略统计分析子系基本功能需求" href="#战略统计分析子系基本功能需求"></a>战略统计分析子系基本功能需求</h4><p>用户交互系统包括用户输入和结果显示等功能。用户通过前台系统输入符合R语言语法和规范的命令或脚本并显示它们的运行结果。</p><h4 id="战略统计分析子系模块结构"><a name="战略统计分析子系模块结构" href="#战略统计分析子系模块结构"></a>战略统计分析子系模块结构</h4><p>用户交互系统，为用户提供交互界面。实现用户输入输出和结果显示两大功能。</p><ul>
+<li>用户输入输出<ul>
+<li>R语言文本编辑：用户通过输入窗口输入与编辑R语言命里与脚本，支持R文件的保存于读取。</li><li>输入数据：支持用户导入符合规范格式的数据，以被用作后续数据统计与分析的R程序中。</li><li>输出数据：支持用户将R运行环境中的数据导出成特定格式的数据记录文件。</li></ul>
+</li><li>结果显示</li></ul><p>在后台R计算核心系统计算出数据统计分析结果后再将结果在前台页面以文本或图形的形式显示出来。</p><h4 id="战略统计分析子系用例图设计"><a name="战略统计分析子系用例图设计" href="#战略统计分析子系用例图设计"></a>战略统计分析子系用例图设计</h4><p>战略统计分析子系统用户交互系统用例图设计如下。</p><p><img src="3.files/ui3_2.png" alt="战略统计分析子系统用户交互系统用例图"></p><h4 id="战略统计分析子系统计算后台系统"><a name="战略统计分析子系统计算后台系统" href="#战略统计分析子系统计算后台系统"></a>战略统计分析子系统计算后台系统</h4><h5 id="战略统计分析子系后台基本功能需求"><a name="战略统计分析子系后台基本功能需求" href="#战略统计分析子系后台基本功能需求"></a>战略统计分析子系后台基本功能需求</h5><p>计算后台系统主要功能是接收前台系统输入的R语言命令与脚本并计结果。</p><h5 id="战略统计分析子系后台模块结构"><a name="战略统计分析子系后台模块结构" href="#战略统计分析子系后台模块结构"></a>战略统计分析子系后台模块结构</h5><p>R语言计算核心以及R与Java间通讯接口。</p><h5 id="战略统计分析子系后台用例图设计"><a name="战略统计分析子系后台用例图设计" href="#战略统计分析子系后台用例图设计"></a>战略统计分析子系后台用例图设计</h5><p>战略统计分析子系统计算后台系统用例图设计如下。</p><p><img src="3.files/ui3_3.png" alt="战略统计分析子系统计算后台系统用例图"></p><h4 id="战略统计分析子系数据库设计"><a name="战略统计分析子系数据库设计" href="#战略统计分析子系数据库设计"></a>战略统计分析子系数据库设计</h4><p>该模块不使用数据库。</p>
+</body>
+
+</html>
