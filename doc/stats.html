@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<!--
+charset=utf-8请不要修改
+-->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>统计分析</title>
+</head>
+<!--
+请不要修改从此到templetEnd之间的代码//templetStart
+-->
+<style>
+    img{
+    width:100%;
+    max-width:800px;
+    }
+   body {
+        /* hide the horizontal scrlilbar */
+        overflow-x: hidden;
+    }
+    /* make the scrlilbar a little wider */
+    ::-webkit-scrlilbar {
+        width: 13px;
+    }
+    ::-webkit-scrlilbar-track  {
+        background-clior: #e2e2e2;
+    }
+    /* the slider or "thumb" has some rounded edges and a shadow and it's a little translucent */
+    ::-webkit-scrlilbar-thumb {
+        border-radius: 6px;
+        box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+        background: rgba(159,216,239,0.8);
+    }
+    /* I don't like the scrlilbar to be so tiny on large documents - hence I set a minimum height */
+    ::-webkit-scrlilbar-thumb:vertical {
+        min-height: 100px;
+    }
+    /* Use a more translucent slider when the window is inactive */
+    ::-webkit-scrlilbar-thumb:window-inactive {
+        background: rgba(159,216,239,0.2); 
+    } 
+</style>
+
+</head>
+
+<body lang=ZH-CN style='text-justify-trim:punctuation' bgclior="#e2e2e2">
+<!--
+请不要修改从templetStart到此之间的代码//templetEnd
+-->
+
+<p><strong>战略统计分析</strong></p>
+<p>点击工具栏“统计分析”按钮,如图1所示启动战略统计分析模块</p>
+<p style="text-align: center">
+<img src="figs/7stat/stats0.png" alt="" title="图一"/><br/>
+图1. 启动战略统计分析模块</p>
+<p>该模块的功能，主要包括：
+<ul>
+<li>使用 Python 3 或 2，进行统计分析</li>
+<li>使用 R 语言进行统计分析</li>
+<li>下载和管理统计分析文档</li>
+</ul>
+</p>
+<p>例如我们要分析2015年各国空军力量数据信息，我们先将各国空军力量数据文件TotalAircraftStrengthData2015.cvs上传到服务器，如图2-0所示，数据格式形式如下<br/>
+<pre>...
+Cuba,80
+Denmark,74
+Zambia,70
+....
+</pre>
+<img src="figs/7stat/upload.png" alt=""/><br/>
+图2-0 上传待分析数据步骤一，点击上传选择文件<br/>
+<img src="figs/7stat/upload1.png" alt=""/><br/>
+图2-0 上传待分析数据步骤二，点击upload实际上传文件
+</p>
+<p>
+  在程序中点击工作区域右上角“新建”菜单，可以选择新建由何种语言编写的统计文档，如图2。
+  <img src="figs/7stat/new.png" alt=""/><br/>
+  图2 新建统计文档
+</p>
+  <p>
+以基于R 的统计文档为例。使用者可以在图3（1）处编辑程序代码或者Markdown格式文档，然后点击(2)处运行按钮运行。
+  <img src="figs/7stat/python2.png"  alt=""/><br/>
+  <span style="text-align: center">图3 基本运行模式</span>
+</p>
+<p>
+例如，我们在一号单元格输入标题文本和基本介绍，如图4
+  <img src="figs/7stat/markdown-edit.png" alt=""/><br/>图4 Markdown文档编辑</p>
+  <p>
+  然后我们点击图4 （1）处将单元格类型切换成Markdown文本格式，再点击（2）处运行，编译形成文档，其结果如图5所示。
+    <img src="figs/7stat/markdown.png"  alt=""/><br/>
+    图5 markdown文档编译结果</p>
+    <p>我们在新的单元格继续输入R程序
+<pre>
+MAdata=read.csv("TotalAircraftStrengthData2015.csv")
+MAdata</pre>
+    其运行结果如图6所示，可以读入数据<br>
+      <img src="figs/7stat/s1.png" alt=""/><br/>图6 读入数据
+    </p>
+    <p>
+    我们还可以继续进入后续的分析，如图7所示
+    <img src="figs/7stat/s2.png" alt=""/><br/>图7 详细分析<br/>
+    包括可以直接在文档中以markdown格式输入分析结果，如图8所示
+<img src="figs/7stat/s3.png" alt=""/><br/>图8 结果分析
+    </p>    
+    <p>
+    所有分析完成后，文档可以自动保存，也可以通过点击图9中相应格式的按钮下载你需要格式的分析报告。
+ <img src="figs/7stat/s4.png" alt=""/><br/>图8 下载Markdown格式的分析报告<br/>
+    </p>        
+</body>
+</html>

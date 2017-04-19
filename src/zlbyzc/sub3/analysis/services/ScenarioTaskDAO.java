@@ -12,7 +12,8 @@ import zlbyzc.sub3.analysis.entities.ScenarioProperty;
 import zlbyzc.sub3.analysis.entities.ScenarioResult;
 import zlbyzc.sub3.analysis.entities.ScenarioTask;
 import zlbyzc.sub3.analysis.services.interfaces.ScenarioTaskDAOInterface;
-import zlbyzc.sub3.analysis.tools.HibernateTool;
+import db.HibernateTool;
+
 
 public class ScenarioTaskDAO implements ScenarioTaskDAOInterface {
 

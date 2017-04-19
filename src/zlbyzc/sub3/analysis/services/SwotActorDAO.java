@@ -10,7 +10,8 @@ import zlbyzc.sub3.analysis.entities.SwotActor;
 import zlbyzc.sub3.analysis.entities.SwotActorProperty;
 import zlbyzc.sub3.analysis.entities.SwotTask;
 import zlbyzc.sub3.analysis.services.interfaces.SwotActorDAOInterface;
-import zlbyzc.sub3.analysis.tools.HibernateTool;
+import db.HibernateTool;
+
 
 public class SwotActorDAO implements SwotActorDAOInterface {
 	

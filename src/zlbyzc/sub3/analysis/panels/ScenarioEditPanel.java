@@ -1068,25 +1068,16 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 			//第二个测试属性		keyFactor
 			dtm = (DefaultTableModel)tableKeyFactor.getModel();
 			dtm.setValueAt(1, 0, 0);dtm.setValueAt("经济因素", 0, 1);dtm.setValueAt(1, 0, 2);		
-			dtm.addRow(new Object[]{dtm.getRowCount()+1, "邛海管理的政策因素", 2});		
-			dtm.addRow(new Object[]{dtm.getRowCount()+1, "人口因素", 3});
-			dtm.addRow(new Object[]{dtm.getRowCount()+1, "陆地水保", 4});
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "政府政策因素", 2});		
 			ScenarioProperty scenarioProperty2 = new ScenarioProperty();
 			scenarioProperty2.setPropertyType("keyfactor");
 			scenarioProperty2.setPropertyContent("经济因素");
 			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty2);
 			ScenarioProperty scenarioProperty3 = new ScenarioProperty();
 			scenarioProperty3.setPropertyType("keyfactor");
-			scenarioProperty3.setPropertyContent("邛海管理的政策因素");
+			scenarioProperty3.setPropertyContent("政府政策因素");
 			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty3);
 			ScenarioProperty scenarioProperty4 = new ScenarioProperty();
-			scenarioProperty4.setPropertyType("keyfactor");
-			scenarioProperty4.setPropertyContent("人口因素");
-			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty4);
-			ScenarioProperty scenarioProperty5 = new ScenarioProperty();
-			scenarioProperty5.setPropertyType("keyfactor");
-			scenarioProperty5.setPropertyContent("陆地水保");
-			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty5);
 			
 			//第三个测试属性				drivingpower
 			dtm = (DefaultTableModel)tableDrivingpower.getModel();
@@ -1128,7 +1119,6 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 			scenarioPropertyList.add(scenarioProperty2);
 			scenarioPropertyList.add(scenarioProperty3);
 			scenarioPropertyList.add(scenarioProperty4);
-			scenarioPropertyList.add(scenarioProperty5);
 			scenarioPropertyList.add(scenarioProperty6);
 			scenarioPropertyList.add(scenarioProperty7);
 			scenarioPropertyList.add(scenarioProperty8);

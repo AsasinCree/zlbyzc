@@ -10,7 +10,8 @@ import org.hibernate.Transaction;
 import zlbyzc.sub3.analysis.entities.SwotActor;
 import zlbyzc.sub3.analysis.entities.SwotActorProperty;
 import zlbyzc.sub3.analysis.services.interfaces.SwotPropertyDAOInterface;
-import zlbyzc.sub3.analysis.tools.HibernateTool;
+import db.HibernateTool;
+
 
 
 public class SwotPropertyDAO implements SwotPropertyDAOInterface {

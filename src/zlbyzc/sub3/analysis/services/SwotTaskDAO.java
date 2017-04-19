@@ -10,13 +10,69 @@ import org.hibernate.Transaction;
 import zlbyzc.sub3.analysis.entities.SwotActor;
 import zlbyzc.sub3.analysis.entities.SwotTask;
 import zlbyzc.sub3.analysis.services.interfaces.SwotTaskDAOInterface;
-import zlbyzc.sub3.analysis.tools.HibernateTool;
+import db.HibernateTool;
 
 public class SwotTaskDAO implements SwotTaskDAOInterface {
 
+	public boolean updateTaskResult(SwotTask swotTask){
+		Session session = null;
+		Transaction transaction = null;
+		
+		try{			
+			session = HibernateTool.getSession();
+			transaction = (Transaction) session.beginTransaction();
+			String hql="update SwotTask set mark1=:mark1 where taskID=:taskID";	
+			Query query = session.createQuery(hql);
+			query.setParameter("mark1", swotTask.getMark1());
+			System.out.println(swotTask.getMark1());
+			query.setParameter("taskID", swotTask.getTaskID());
+			query.executeUpdate();
+			
+			transaction.commit();
+			return true;				
+		}catch(Exception e){			
+			e.printStackTrace();	
+			transaction.commit();
+			return false;			
+		}finally{			
+			if(transaction != null)
+				transaction =null;
+			if(session != null)
+				HibernateTool.closeSession(session);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String getTaskResult(SwotTask swotTask){
+		Session session = null;
+		Transaction transaction = null;
+		String mark1 = "";
+		
+		try{			
+			session = HibernateTool.getSession();
+			transaction = (Transaction) session.beginTransaction();
+			String hql="from SwotTask where taskID=:taskID";	
+			Query query = session.createQuery(hql);
+			query.setParameter("taskID", swotTask.getTaskID());
+			List<SwotTask> swotTaskList = (List<SwotTask>)query.list();
+			mark1 = swotTaskList.get(0).getMark1();
+			
+			transaction.commit();
+			return mark1;				
+		}catch(Exception e){			
+			e.printStackTrace();	
+			transaction.commit();
+			return mark1;			
+		}finally{			
+			if(transaction != null)
+				transaction =null;
+			if(session != null)
+				HibernateTool.closeSession(session);
+		}
+	}
+	
 	@Override
 	public boolean addTask(SwotTask swotTask) {
-
 		Session session = null;
 		Transaction transaction = null;
 		
@@ -37,8 +93,7 @@ public class SwotTaskDAO implements SwotTaskDAOInterface {
 				transaction =null;
 			if(session != null)
 				HibernateTool.closeSession(session);
-		}
-		
+		}	
 	}
 
 	@Override

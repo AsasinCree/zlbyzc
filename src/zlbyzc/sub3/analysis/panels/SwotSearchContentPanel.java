@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
@@ -27,8 +26,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import zlbyzc.sub3.analysis.entities.SwotActor;
@@ -83,14 +85,32 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 	
 	//底部右侧面板
 	private JTabbedPane tabbedPane;
+	private JTextArea textfieldResultInTableView;
+	private JTextArea textfieldResultInGraphView;
+	private JSplitPane splitpaneInTableView;
+	private JSplitPane splitpaneInGraphView;
+	private JButton buttonSaveInResultInTableView;
+	private JButton buttonResetInResultInTableView;
+	private JButton buttonSaveInResultInGraphView;
+	private JButton buttonResetInResultInGraphView;
 	private JPanel panelTableViewInTabbedPane;
+	private JPanel panelLayTableInTableView;
+	private JPanel panelLayResultInTableView;
+	private JPanel panelLayTextAreaInResultInTableView;
+	private JPanel panelLayButtonInResultInTableView;
 	private JPanel panelGraphViewInTabbedPane;
+	private JPanel panelLayGraphInGraphView;
+	private JPanel panelLayResultInGraphView;
+	private JPanel panelLayTextAreaInResultInGraphView;
+	private JPanel panelLayButtonInResultInGraphView;
 	private JDesktopPane tableDesktop;
 	private JDesktopPane graphDesktop;
 	private int actorPanelDimension;		//由actor个数决定 n x n 的排版进而算出每个actor面板大小
 	private int actorPanelWidth;
 	private int actorPanelHeight;
-	private DefaultListModel<JInternalFrame> listModelJInternalFrame;
+	private int actorGraphPanelWidth;
+	private int actorGraphPanelHeight;
+	private DefaultListModel<JInternalFrame> listModelTableJInternalFrame;
 	private DefaultListModel<SwotActorPanel> listModelActorPanel;
 	private DefaultListModel<JInternalFrame> listModelGraphJInternalFrame;
 	private DefaultListModel<SwotActorGraphPanel> listModelActorGraphPanel;
@@ -142,12 +162,70 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 		labelInLeft = new JLabel("参与方");
 
 		tabbedPane = new JTabbedPane();
+		tabbedPane.addChangeListener(new ChangeListener(){
+			public void stateChanged(ChangeEvent e){
+				SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+				textfieldResultInTableView.setText(swotTaskDAO.getTaskResult(swotTask));
+				textfieldResultInGraphView.setText(swotTaskDAO.getTaskResult(swotTask));	
+			}
+		});
+		
+		splitpaneInTableView = new JSplitPane();
+		splitpaneInTableView.setOneTouchExpandable(true);  		//让分隔线显示出箭头
+		splitpaneInTableView.setContinuousLayout(true); 		//当用户操作分隔线箭头时，系统重绘图形
+		splitpaneInTableView.setOrientation(JSplitPane.VERTICAL_SPLIT); 		//设置方向或者分隔窗格的方式（HORIZONTAL_SPLIT表示左右分隔，VERTICAL_SPLIT）
+		splitpaneInTableView.setDividerSize(3); 		//设置分隔条的大小
+		splitpaneInTableView.setDividerLocation(600); 	//设置分隔条的位置		
+		
+		splitpaneInGraphView = new JSplitPane();
+		splitpaneInGraphView.setOneTouchExpandable(true);  		//让分隔线显示出箭头
+		splitpaneInGraphView.setContinuousLayout(true); 		//当用户操作分隔线箭头时，系统重绘图形
+		splitpaneInGraphView.setOrientation(JSplitPane.VERTICAL_SPLIT); 		//设置方向或者分隔窗格的方式（HORIZONTAL_SPLIT表示左右分隔，VERTICAL_SPLIT）
+		splitpaneInGraphView.setDividerSize(3); 		//设置分隔条的大小
+		splitpaneInGraphView.setDividerLocation(600); 	//设置分隔条的位置		
+		
+		textfieldResultInTableView=new JTextArea();		
+		textfieldResultInTableView.setLineWrap(true);		//支持自动换行
+//		textfieldResultInTableView.setMinimumSize(new Dimension(100,25));
+//		textfieldResultInTableView.setMaximumSize(new Dimension(900,200));
+		textfieldResultInGraphView=new JTextArea();		
+		textfieldResultInGraphView.setLineWrap(true);		//支持自动换行
+//		textfieldResultInGraphView.setMinimumSize(new Dimension(100,25));
+//		textfieldResultInGraphView.setMaximumSize(new Dimension(900,200));
+				
+		buttonSaveInResultInTableView = new JButton("保存");
+		buttonResetInResultInTableView = new JButton("重置");
+		buttonSaveInResultInGraphView = new JButton("保存");
+		buttonResetInResultInGraphView = new JButton("重置");
+		buttonSaveInResultInTableView.addActionListener(this);
+		buttonResetInResultInTableView.addActionListener(this);
+		buttonSaveInResultInGraphView.addActionListener(this);
+		buttonResetInResultInGraphView.addActionListener(this);
 		
 		panelTableViewInTabbedPane = new JPanel();
-		panelTableViewInTabbedPane.setLayout(new BorderLayout(0, 0));
+		panelLayTableInTableView = new JPanel();
+		panelLayResultInTableView = new JPanel();
+		panelLayTextAreaInResultInTableView = new JPanel();
+		panelLayButtonInResultInTableView = new JPanel();
+		
 		panelGraphViewInTabbedPane = new JPanel();
+		panelLayGraphInGraphView = new JPanel();
+		panelLayResultInGraphView = new JPanel();
+		panelLayTextAreaInResultInGraphView = new JPanel();
+		panelLayButtonInResultInGraphView = new JPanel();
+		
+		panelTableViewInTabbedPane.setLayout(new BorderLayout(0, 0));
+		panelLayTableInTableView.setLayout(new BorderLayout(0, 0));
+		panelLayResultInTableView.setLayout(new BoxLayout(panelLayResultInTableView, BoxLayout.X_AXIS));
+		panelLayTextAreaInResultInTableView.setLayout(new BorderLayout(0, 0));
+		panelLayButtonInResultInTableView.setLayout(new BoxLayout(panelLayButtonInResultInTableView, BoxLayout.Y_AXIS));
+		
 		panelGraphViewInTabbedPane.setLayout(new BorderLayout(0, 0));
-			
+		panelLayGraphInGraphView.setLayout(new BorderLayout(0, 0));
+		panelLayResultInGraphView.setLayout(new BoxLayout(panelLayResultInGraphView, BoxLayout.X_AXIS));
+		panelLayTextAreaInResultInGraphView.setLayout(new BorderLayout(0, 0));
+		panelLayButtonInResultInGraphView.setLayout(new BoxLayout(panelLayButtonInResultInGraphView, BoxLayout.Y_AXIS));
+				
 		initializeList();
 		
 		panelTableViewInTabbedPane.addComponentListener(new ComponentAdapter(){
@@ -161,7 +239,7 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 				actorPanelWidth = panelTableViewInTabbedPane.getSize().width / actorPanelDimension;
 				actorPanelHeight = panelTableViewInTabbedPane.getSize().height / actorPanelDimension;
 	
-				refreshPanelTableViewInTabbedPane();
+				refreshAll();
 		    }
 		});
 		
@@ -197,6 +275,32 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 		
 		tabbedPane.add(panelTableViewInTabbedPane,"表格");
 		tabbedPane.add(panelGraphViewInTabbedPane,"图形");
+		
+		panelTableViewInTabbedPane.add(splitpaneInTableView);
+		panelGraphViewInTabbedPane.add(splitpaneInGraphView);
+		
+		splitpaneInTableView.setTopComponent(panelLayTableInTableView);
+		splitpaneInTableView.setBottomComponent(panelLayResultInTableView);
+		splitpaneInGraphView.setTopComponent(panelLayGraphInGraphView);
+		splitpaneInGraphView.setBottomComponent(panelLayResultInGraphView);
+//		panelTableViewInTabbedPane.add(panelLayTableInTableView, BorderLayout.CENTER);
+//		panelTableViewInTabbedPane.add(panelLayResultInTableView, BorderLayout.SOUTH);
+//		panelGraphViewInTabbedPane.add(panelLayGraphInGraphView, BorderLayout.CENTER);
+//		panelGraphViewInTabbedPane.add(panelLayResultInGraphView, BorderLayout.SOUTH);
+
+		panelLayResultInTableView.add(panelLayTextAreaInResultInTableView);
+		panelLayResultInTableView.add(panelLayButtonInResultInTableView);
+		panelLayResultInGraphView.add(panelLayTextAreaInResultInGraphView);
+		panelLayResultInGraphView.add(panelLayButtonInResultInGraphView);
+		
+		panelLayTextAreaInResultInTableView.add(new JLabel("<html>结<br/>果</html>"), BorderLayout.WEST);
+		panelLayTextAreaInResultInTableView.add(new JScrollPane(textfieldResultInTableView));
+		panelLayButtonInResultInTableView.add(buttonSaveInResultInTableView);
+		panelLayButtonInResultInTableView.add(buttonResetInResultInTableView);
+		panelLayTextAreaInResultInGraphView.add(new JLabel("<html>结<br/>果</html>"), BorderLayout.WEST);
+		panelLayTextAreaInResultInGraphView.add(new JScrollPane(textfieldResultInGraphView));
+		panelLayButtonInResultInGraphView.add(buttonSaveInResultInGraphView);
+		panelLayButtonInResultInGraphView.add(buttonResetInResultInGraphView);
 		/*-------------底部面板End-----------------*/
 		
 		add(panelBottom, BorderLayout.CENTER);
@@ -215,7 +319,7 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 		listActorName.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);		//【待验证功能】	
 		listActorName.setBorder(BorderFactory.createTitledBorder(""));		
 		
-		listModelJInternalFrame = new DefaultListModel<JInternalFrame>();
+		listModelTableJInternalFrame = new DefaultListModel<JInternalFrame>();
 		listModelActorPanel = new DefaultListModel<SwotActorPanel>();	
 		listModelGraphJInternalFrame = new DefaultListModel<JInternalFrame>();
 		listModelActorGraphPanel = new DefaultListModel<SwotActorGraphPanel>();
@@ -253,7 +357,7 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 				jif.setLayout(new BorderLayout());		//该布局可以使actorPanelNew随JInternalFrame大小而改变，达到一直是填满整个JInternalFrame效果				
 				jif.setVisible(true);
 				jif.setContentPane(actorPanel);
-				listModelJInternalFrame.addElement(jif);	
+				listModelTableJInternalFrame.addElement(jif);	
 				
 				final JInternalFrame graphInternalFrame = new JInternalFrame(swotActor.getActorName(), true, false, true, true);
 				graphInternalFrame.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
@@ -263,8 +367,7 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 				listModelGraphJInternalFrame.addElement(graphInternalFrame);
 			}
 		}
-			
-		
+					
 		listActorName.addMouseListener(new MouseAdapter() {		//监听单击时checkbox框toggle
 		
 			public void mouseClicked(MouseEvent e) {
@@ -280,11 +383,14 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 					countSelectedActor--;
 				}
 				
-				refreshPanelTableViewInTabbedPane();
+				refreshAll();
 				
 				listActorName.repaint();
 			}
 		});
+		
+		textfieldResultInTableView.setText(swotTaskDAO.getTaskResult(swotTask));
+		textfieldResultInGraphView.setText(swotTaskDAO.getTaskResult(swotTask));
 	}
 	
 	
@@ -356,17 +462,17 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 		
 		int selectedIndex = listActorName.getSelectedIndex();
 		listModelActorName.remove(selectedIndex);	
-		listModelJInternalFrame.remove(selectedIndex);
+		listModelTableJInternalFrame.remove(selectedIndex);
 		listModelActorPanel.remove(selectedIndex);
 		
 		countSelectedActor = 0;		//初始化筛选显示参与者面板的个数	
 		
-		refreshPanelTableViewInTabbedPane();
+		refreshAll();
 		
 	}
 		
 	//筛选或者添加删除参与者之后重新排版右侧参与者面板
-	public void refreshPanelTableViewInTabbedPane() {
+	public void refreshAll() {
 		
 		int countLoop, i, j;
 		
@@ -382,23 +488,26 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 			actorPanelDimension++;
 		}		
 
-		actorPanelWidth = panelTableViewInTabbedPane.getSize().width / actorPanelDimension;
-		actorPanelHeight = panelTableViewInTabbedPane.getSize().height / actorPanelDimension;
+		actorPanelWidth = panelLayTableInTableView.getSize().width / actorPanelDimension;
+		actorPanelHeight = panelLayTableInTableView.getSize().height / actorPanelDimension;
+		
+		actorGraphPanelWidth = panelLayGraphInGraphView.getSize().width/actorPanelDimension;
+		actorGraphPanelHeight = panelLayGraphInGraphView.getSize().height/actorPanelDimension;
 		
 		//清空原有的参与者面板
 		if(tableDesktop != null) {
-			panelTableViewInTabbedPane.remove(tableDesktop);
+			panelLayTableInTableView.remove(tableDesktop);
 		}
 		if(graphDesktop != null) {
-			panelGraphViewInTabbedPane.remove(graphDesktop);
+			panelLayGraphInGraphView.remove(graphDesktop);
 		}
 		
 		//将所有JInternalFrame设置为为无最小化以及未选中状态。解决在添加/删除/筛选参与者后  actorpanel 层次问题【未知缘由】
-		for(i = 0; i < listModelJInternalFrame.getSize(); i++) {
+		for(i = 0; i < listModelTableJInternalFrame.getSize(); i++) {
 			
 			try {
-				if(listModelJInternalFrame.getElementAt(i).isIcon())
-					listModelJInternalFrame.getElementAt(i).setIcon(false);		//去除最小化
+				if(listModelTableJInternalFrame.getElementAt(i).isIcon())
+					listModelTableJInternalFrame.getElementAt(i).setIcon(false);		//去除最小化
 				if(listModelGraphJInternalFrame.getElementAt(i).isIcon())
 					listModelGraphJInternalFrame.getElementAt(i).setIcon(false);
 			} catch (PropertyVetoException e1) {
@@ -407,8 +516,8 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 			}
 			
 			try {	
-				if(listModelJInternalFrame.getElementAt(i).isSelected())
-					listModelJInternalFrame.getElementAt(i).setSelected(false);
+				if(listModelTableJInternalFrame.getElementAt(i).isSelected())
+					listModelTableJInternalFrame.getElementAt(i).setSelected(false);
 				if(listModelGraphJInternalFrame.getElementAt(i).isSelected())
 					listModelGraphJInternalFrame.getElementAt(i).setSelected(false);
 			} catch (PropertyVetoException e) {
@@ -427,25 +536,33 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 		//循环加入一个个面板(未选中的除外)
 		for(i = 0, j = 0; i < listModelActorName.getSize(); i++) {
 			if(listModelActorName.getElementAt(i).isSelected() == true || countSelectedActor == 0) { //后者条件为没有实行筛选
-				listModelJInternalFrame.getElementAt(i).setBounds((j%actorPanelDimension)*actorPanelWidth, 
+				listModelTableJInternalFrame.getElementAt(i).setBounds((j%actorPanelDimension)*actorPanelWidth, 
 						(j/actorPanelDimension)*actorPanelHeight, actorPanelWidth, actorPanelHeight);
-				tableDesktop.add(listModelJInternalFrame.getElementAt(i));		
+				tableDesktop.add(listModelTableJInternalFrame.getElementAt(i));		
 				
 				listModelGraphJInternalFrame.getElementAt(i).setBounds((j%actorPanelDimension)*actorPanelWidth, 
 						(j/actorPanelDimension)*actorPanelHeight, actorPanelWidth, actorPanelHeight);
 				graphDesktop.add(listModelGraphJInternalFrame.getElementAt(i));
+				listModelActorGraphPanel.getElementAt(i).refreshPanel();
 				
 				j++;
 			}
 		}
 		
-		panelTableViewInTabbedPane.add(tableDesktop);
-		panelTableViewInTabbedPane.revalidate();
-		panelTableViewInTabbedPane.repaint();
+		SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+		textfieldResultInTableView.setText(swotTaskDAO.getTaskResult(swotTask));
+		splitpaneInTableView.setDividerLocation(splitpaneInTableView.getDividerLocation());
 		
-		panelGraphViewInTabbedPane.add(graphDesktop);
-		panelGraphViewInTabbedPane.revalidate();
-		panelGraphViewInTabbedPane.repaint();
+		textfieldResultInGraphView.setText(swotTaskDAO.getTaskResult(swotTask));	
+		splitpaneInGraphView.setDividerLocation(splitpaneInGraphView.getDividerLocation());
+		
+		panelLayTableInTableView.add(tableDesktop);
+		panelLayTableInTableView.revalidate();
+		panelLayTableInTableView.repaint();
+		
+		panelLayGraphInGraphView.add(graphDesktop);
+		panelLayGraphInGraphView.revalidate();
+		panelLayGraphInGraphView.repaint();
 	}
 
 	@Override
@@ -484,20 +601,34 @@ public class SwotSearchContentPanel extends JPanel implements ActionListener{
 			internalFrame.setContentPane(newActorPanel);
 			internalFrame.setVisible(true);
 			
-			listModelJInternalFrame.addElement(internalFrame);
+			listModelTableJInternalFrame.addElement(internalFrame);
 			/*-------------添加一个装载actorpanel的JInternalFrame End--------------*/
 
 			textfieldActorNameInAddActor.setText("");
 			buttonConfirmInAddActor.setText("继续添加");
 			
-			refreshPanelTableViewInTabbedPane();
+			refreshAll();
 			
 		}
 		
-		else if(e.getSource() == buttonCancelInAddActor)	{
-			
+		else if(e.getSource() == buttonCancelInAddActor)	{	
 			frameAddActor.dispose();
-			
+		}
+		else if(e.getSource() == buttonSaveInResultInTableView)	{		//表格界面结果保存
+			SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+			swotTask.setMark1(textfieldResultInTableView.getText());
+			swotTaskDAO.updateTaskResult(swotTask);
+		}
+		else if(e.getSource() == buttonResetInResultInTableView)	{		//表格界面结果保存
+			textfieldResultInTableView.setText("");
+		}
+		else if(e.getSource() == buttonSaveInResultInGraphView)	{		//图形界面结果保存
+			SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+			swotTask.setMark1(textfieldResultInGraphView.getText());;
+			swotTaskDAO.updateTaskResult(swotTask);
+		}
+		else if(e.getSource() == buttonResetInResultInGraphView)	{		//图形界面结果保存
+			textfieldResultInGraphView.setText("");
 		}
 	}
 }

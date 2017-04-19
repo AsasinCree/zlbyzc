@@ -10,7 +10,7 @@ import org.hibernate.Transaction;
 import zlbyzc.sub3.analysis.entities.ScenarioLogic;
 import zlbyzc.sub3.analysis.entities.ScenarioProperty;
 import zlbyzc.sub3.analysis.entities.ScenarioTask;
-import zlbyzc.sub3.analysis.tools.HibernateTool;
+import db.HibernateTool;
 import zlbyzc.sub3.analysis.services.interfaces.ScenarioLogicDAOInterface;
 
 

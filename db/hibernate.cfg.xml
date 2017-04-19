@@ -1,0 +1,34 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+          "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+
+		<property name="show_sql">false</property><!-- 配置在控制台显示SQL语句 -->
+		<property name="format_sql">true</property><!-- 配置对输出的SQL语句进行格式化 -->
+		<property name="use_sql_comments">true</property><!-- 配置在输出的SQL语句前面添加提示信息 -->
+		
+		<property name="hbm2ddl.auto">update</property>
+
+		<mapping resource="zlbyzc/sub3/duozhunze/DesctionMaping.hbm.xml" /><!-- 配置持久化类映射文件 -->
+		<mapping resource="zlbyzc/sub3/duozhunze/Expert_DescitionMaping.hbm.xml" />
+		<mapping resource="zlbyzc/sub3/duozhunze/Expert_fieldMaping.hbm.xml" />
+		<mapping resource="zlbyzc/sub3/duozhunze/ExpertMaping.hbm.xml" />
+		<mapping resource="zlbyzc/sub3/duozhunze/FieldMaping.hbm.xml" />
+	 	<mapping resource="zlbyzc/sub3/duozhunze/RuleMaping.hbm.xml" />
+		<mapping resource="zlbyzc/sub3/duozhunze/SchemeMaping.hbm.xml" />
+		
+		<mapping resource="zlbyzc/sub3/analysis/entities/User.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/SwotActor.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/SwotProperty.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/SwotTask.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/ScenarioTask.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/ScenarioResult.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/ScenarioProperty.hbm.xml"/>
+		<mapping resource="zlbyzc/sub3/analysis/entities/ScenarioLogic.hbm.xml"/>
+	</session-factory>
+
+</hibernate-configuration>

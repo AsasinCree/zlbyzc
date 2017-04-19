@@ -15,7 +15,7 @@ import org.hibernate.Transaction;
 
 import zlbyzc.sub3.analysis.entities.User;
 import zlbyzc.sub3.analysis.services.interfaces.UserDAOInterface;
-import zlbyzc.sub3.analysis.tools.HibernateTool;
+import db.HibernateTool;
 
 public class UserDAO implements UserDAOInterface {
 

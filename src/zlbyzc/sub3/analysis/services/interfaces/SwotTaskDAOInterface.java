@@ -7,6 +7,8 @@ import zlbyzc.sub3.analysis.entities.SwotActor;
 import zlbyzc.sub3.analysis.entities.SwotTask;
 
 public interface SwotTaskDAOInterface {
+	public boolean updateTaskResult(SwotTask swotTask);
+	public String getTaskResult(SwotTask swotTask);
 	public boolean addTask(SwotTask swotTask);
 	public boolean updateTask(SwotTask swotTask);
 	public boolean deleteTask(SwotTask swotTask);

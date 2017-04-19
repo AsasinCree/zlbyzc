@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<!--
+charset=utf-8请不要修改
+-->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>DEA数据包络分析子模块帮助文档</title>
+</head>
+<!--
+请不要修改从此到templetEnd之间的代码//templetStart
+-->
+<style>
+    img{
+    width:100%;
+    max-width:800px;
+    }
+   body {
+        /* hide the horizontal scrlilbar */
+        overflow-x: hidden;
+    }
+    /* make the scrlilbar a little wider */
+    ::-webkit-scrlilbar {
+        width: 13px;
+    }
+    ::-webkit-scrlilbar-track  {
+        background-clior: #e2e2e2;
+    }
+    /* the slider or "thumb" has some rounded edges and a shadow and it's a little translucent */
+    ::-webkit-scrlilbar-thumb {
+        border-radius: 6px;
+        box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+        background: rgba(159,216,239,0.8);
+    }
+    /* I don't like the scrlilbar to be so tiny on large documents - hence I set a minimum height */
+    ::-webkit-scrlilbar-thumb:vertical {
+        min-height: 100px;
+    }
+    /* Use a more translucent slider when the window is inactive */
+    ::-webkit-scrlilbar-thumb:window-inactive {
+        background: rgba(159,216,239,0.2); 
+    } 
+</style>
+
+</head>
+
+<body lang=ZH-CN style='text-justify-trim:punctuation' bgclior="#e2e2e2">
+<!--
+请不要修改从templetStart到此之间的代码//templetEnd
+-->
+
+<p><strong>DEA数据包络分析子模块</strong></p>
+
+<ul>
+<li>操作说明</li>
+<p>进入战略评价子系统后，选择DEA数据包络分析子模块，如图1所示单击“DEA数据包络”，弹出DEA数据包络分析窗口</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea1.png" alt="" title="图一"/><br/>
+图1. DEA数据包络分析子模块进入</p>
+<p>一·要素输入</p>
+<p>可以看到DEA数据包络分析模块输入界面如图2所示，图中1，2，3，4号输入框输入DEA数据包络分析的各要素，5输入框为时间输入，具体如下：</p>
+<ol>
+<li>在1输入框输入战略目标</li>
+<li>在2输入框输入决策单元，每个单元中间用空格隔开</li>
+<li>在3输入框输入投入项目，每个项目中间用空格隔开</li>
+<li>在4输入框输入产出项目，每个项目中间用空格隔开</li>
+<li>在5输入框选择时间，若不选则默认为系统时间</li>
+</ol>
+<p style="text-align: center">
+<img src="figs/4rank/dea2_3.PNG" alt="" title="图二"/><br/>
+图2. DEA数据包络分析输入窗口</p>
+<p>窗口中最下面三个按钮，单击”实例“按钮则在1，2，3，4输入框自动输入内置例子，如图3所示，单击“清空”则清空上面所有输入框，单击”确认“进入下一步的数据输入窗口，如图4所示。</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea3.PNG" alt="" title="图三"/><br/>
+图3. DEA数据包络分输入窗口单击”实例“后显示</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea4.PNG" alt="" title="图四"/><br/>
+图4. 数据输入窗口整体概览</p>
+
+<p>二·数据输入</p>
+<p>以实例进入下一步数据输入，整个数据输入窗口如图4所示，分1，2和按钮区共三块区域，其中1，2区域分别输入投入矩阵，输入产出矩阵，具体如下：</p>
+<ol>
+<li>在1区域中显示如图4—1所示投入矩阵输入框，在数字输入框中输入对应数值</li>
+<p style="text-align: center">
+<img src="figs/4rank/dea4_1.PNG" alt="" title="图四-1"/><br/>
+图4-1. 投入矩阵输入</p>
+<li>在2区域中显示如图4—2所示产出矩阵输入框，在数字输入框中输入对应数值</li>
+<p style="text-align: center">
+<img src="figs/4rank/dea4_2.PNG" alt="" title="图四-2"/><br/>
+图4-2. 产出矩阵输入</p>
+</ol>
+<p>窗口中最下面三个按钮，单击”实例“按钮则在1，2区域自动输入内置例子的数据，如图4—1,4-2中所示数据，单击“重置”则清空上面所有数据，单击”确认“弹出结果显示窗口，如图5所示。</p>
+
+<p>三·结果显示</p>
+<p>在数据输入完成后，单击“确认”后，结果显示窗口主体如图5所示，上面表格显示最终计算的各决策单元的DEA有效性值，若值为1则说明该决策单元DEA有效，否则非DEA有效；下面为结论输入框，输入结论以及其他信息。图5中显示数据即为实例的结果，可以看出分理处1和分理处3DEA有效，分理处2和4非DEA有效。结论输入完毕后单击“保存”按钮，保存此次DEA数据包络分析的所有数据，保存成功或不成功都会弹出提示，若不成功则为数据库连接问题。至此整个过程结束。</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea5.PNG" alt="" title="图五"/><br/>
+图5. 结果显示窗口主体</p>
+
+<p>四·历史查询</p>
+<p>在战略评价子系统下，查询选择框中，单击选择“DEA结果查询”如图6所示，进入DEA历史结果查询窗口，窗口结构如图7所示。</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea6.PNG" alt="" title="图六"/><br/>
+图6. DEA结果查询进入</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea7.PNG" alt="" title="图七"/><br/>
+图7. DEA结果查询窗口概览</p>
+<p>查询窗口分为3部分，如图7中1，2，3块，其中在第1块为查询条件输入，具体如图7-1，在关键词输入框中输入战略目标关键词，如实例中的“银行各分理处”，在起始日期和结束日期中选择日期缩小范围，然后点击查询，可以看到第2块“查询结果列表”中显示查询结果（初始显示所有历史记录列表），如图7-2所示，单击所选记录，则第3块“查询详情”中显示该结果的详细数据，如图7-3所示。</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea7_1.PNG" alt="" title="图七-1"/><br/>
+图7-1. 查询条件输入</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea7_2.PNG" alt="" title="图七-2"/><br/>
+图7-2. 结果列表显示</p>
+<p style="text-align: center">
+<img src="figs/4rank/dea7_3.PNG" alt="" title="图七-3"/><br/>
+图7-3. 结果详情显示</p>
+
+<li>原理介绍</li>
+<p>DEA模块的主要功能是为战略家提供多输入-多输出的有效综合问题的决策单元最优化决策。本模块的目标是：给定目标，项目集，投入决策单元，产出决策单元，通过投入矩阵与产出矩阵判断某个项目是否DEA有效。用户首先给出目标，项目集，投入决策单元，产出决策单元，再根据投入产出矩阵，后台程序计算输出结果。具体理论知识如下：</p>
+<p>DEA数据包络分析模型简介：</p>
+<p>DEA是使用数学规划（包括线性规划、多目标规划、具有锥形结构的广义最优化、半无限规划、随机规划等）模型，评价具有多个输入、特别是多个输出的“部门”或“单位”（称为“决策单元”，简记DMU）间的相对有效性（称为DEA有效）。实际上“效率”或“相对有效性”的概念也是指产出与投入之比，不过是加权意义之下的产出投入比。根据对各DMU观察的数据判断DMU是否为DEA有效，本质上是判断DMU是否位于可能集的“生产前沿面”上。</p>
+<p>DEA数据包络分析基本概念：</p>
+<p>在DEA中一般称被衡量绩效的组织为决策单元（decision making unit——DMU）。<br>
+   设：n 个决策单元（ j = 1，2，…，n ）<br>
+   每个决策单元有相同的 m 项投入（输入）（i = 1，2，…，m ）<br>
+   每个决策单元有相同的 s 项产出（输出） （r = 1，2，…，s ）<br>
+   X<sub>ij</sub> ——第 j 决策单元的第 i 项投入<br>
+   y<sub>rj</sub> ——第 j 决策单元的第 r 项产出<br>
+   衡量第j0决策单元是否DEA有效。</p>
+<p>即求解若干个线性规划模型中的E值，若E＜1，则j0决策单元非DEA有效，否则j0决策单元DEA有效</p>
+
+
+</ul>
+
+
+</body>
+</html>

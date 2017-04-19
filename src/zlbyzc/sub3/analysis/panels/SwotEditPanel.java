@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -26,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 //import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.Box;
@@ -35,6 +37,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import javax.swing.plaf.synth.SynthSplitPaneUI;
 import javax.swing.table.DefaultTableModel;
 
 import com.sun.org.apache.xml.internal.dtm.DTM;
@@ -96,15 +99,29 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 //	private JLabel lableRemark1InAddActor;
 //	private JLabel lableRemark2InAddActor;
 	private JTextField textfieldActorNameInAddActor;
-//	private JTextArea textfieldRemark1InAddActor;
-//	private JTextArea textfieldRemark2InAddActor;
 	private JButton buttonConfirmInAddActor;		//添加参与方按钮
 	private JButton buttonCancelInAddActor;		//删除参与方按钮
 
 	//底部右侧面板
 	private JTabbedPane tabbedPane;
+	private JTextArea textfieldResultInTableView;
+	private JTextArea textfieldResultInGraphView;
+	private JSplitPane splitpaneInTableView;
+	private JSplitPane splitpaneInGraphView;
+	private JButton buttonSaveInResultInTableView;
+	private JButton buttonResetInResultInTableView;
+	private JButton buttonSaveInResultInGraphView;
+	private JButton buttonResetInResultInGraphView;
 	private JPanel panelTableViewInTabbedPane;
+	private JPanel panelLayTableInTableView;
+	private JPanel panelLayResultInTableView;
+	private JPanel panelLayTextAreaInResultInTableView;
+	private JPanel panelLayButtonInResultInTableView;
 	private JPanel panelGraphViewInTabbedPane;
+	private JPanel panelLayGraphInGraphView;
+	private JPanel panelLayResultInGraphView;
+	private JPanel panelLayTextAreaInResultInGraphView;
+	private JPanel panelLayButtonInResultInGraphView;
 	private JDesktopPane tableDesktop;
 	private JDesktopPane graphDesktop;
 	private int actorPanelDimension;		//由actor个数决定 n x n 的排版进而算出每个actor面板大小
@@ -182,20 +199,70 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 		initializeListActorName();
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addChangeListener(new ChangeListener(){
-			   public void stateChanged(ChangeEvent e){
-			    JTabbedPane tabbedPane = (JTabbedPane)e.getSource();
-			    int selectedIndex = tabbedPane.getSelectedIndex();
-			    
-			    if(selectedIndex == 1){
-			    	refreshActorGraphPanel();}
-			   }
+			public void stateChanged(ChangeEvent e){
+				SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+				textfieldResultInTableView.setText(swotTaskDAO.getTaskResult(swotTask));
+				textfieldResultInGraphView.setText(swotTaskDAO.getTaskResult(swotTask));	
+				refreshActorGraphPanel();
+			}
 		});
-				
-		panelTableViewInTabbedPane = new JPanel();
-		panelTableViewInTabbedPane.setLayout(new BorderLayout(0, 0));
-		panelGraphViewInTabbedPane = new JPanel();
-		panelGraphViewInTabbedPane.setLayout(new BorderLayout(0, 0));
 		
+		splitpaneInTableView = new JSplitPane();
+		splitpaneInTableView.setOneTouchExpandable(true);  		//让分隔线显示出箭头
+		splitpaneInTableView.setContinuousLayout(true); 		//当用户操作分隔线箭头时，系统重绘图形
+		splitpaneInTableView.setOrientation(JSplitPane.VERTICAL_SPLIT); 		//设置方向或者分隔窗格的方式（HORIZONTAL_SPLIT表示左右分隔，VERTICAL_SPLIT）
+		splitpaneInTableView.setDividerSize(3); 		//设置分隔条的大小
+		splitpaneInTableView.setDividerLocation(600); 	//设置分隔条的位置		
+		
+		splitpaneInGraphView = new JSplitPane();
+		splitpaneInGraphView.setOneTouchExpandable(true);  		//让分隔线显示出箭头
+		splitpaneInGraphView.setContinuousLayout(true); 		//当用户操作分隔线箭头时，系统重绘图形
+		splitpaneInGraphView.setOrientation(JSplitPane.VERTICAL_SPLIT); 		//设置方向或者分隔窗格的方式（HORIZONTAL_SPLIT表示左右分隔，VERTICAL_SPLIT）
+		splitpaneInGraphView.setDividerSize(3); 		//设置分隔条的大小
+		splitpaneInGraphView.setDividerLocation(600); 	//设置分隔条的位置		
+		
+		textfieldResultInTableView=new JTextArea();		
+		textfieldResultInTableView.setLineWrap(true);		//支持自动换行
+//		textfieldResultInTableView.setMinimumSize(new Dimension(100,25));
+//		textfieldResultInTableView.setMaximumSize(new Dimension(900,200));
+		textfieldResultInGraphView=new JTextArea();		
+		textfieldResultInGraphView.setLineWrap(true);		//支持自动换行
+//		textfieldResultInGraphView.setMinimumSize(new Dimension(100,25));
+//		textfieldResultInGraphView.setMaximumSize(new Dimension(900,200));
+				
+		buttonSaveInResultInTableView = new JButton("保存");
+		buttonResetInResultInTableView = new JButton("重置");
+		buttonSaveInResultInGraphView = new JButton("保存");
+		buttonResetInResultInGraphView = new JButton("重置");
+		buttonSaveInResultInTableView.addActionListener(this);
+		buttonResetInResultInTableView.addActionListener(this);
+		buttonSaveInResultInGraphView.addActionListener(this);
+		buttonResetInResultInGraphView.addActionListener(this);
+		
+		panelTableViewInTabbedPane = new JPanel();
+		panelLayTableInTableView = new JPanel();
+		panelLayResultInTableView = new JPanel();
+		panelLayTextAreaInResultInTableView = new JPanel();
+		panelLayButtonInResultInTableView = new JPanel();
+		
+		panelGraphViewInTabbedPane = new JPanel();
+		panelLayGraphInGraphView = new JPanel();
+		panelLayResultInGraphView = new JPanel();
+		panelLayTextAreaInResultInGraphView = new JPanel();
+		panelLayButtonInResultInGraphView = new JPanel();
+		
+		panelTableViewInTabbedPane.setLayout(new BorderLayout(0, 0));
+		panelLayTableInTableView.setLayout(new BorderLayout(0, 0));
+		panelLayResultInTableView.setLayout(new BoxLayout(panelLayResultInTableView, BoxLayout.X_AXIS));
+		panelLayTextAreaInResultInTableView.setLayout(new BorderLayout(0, 0));
+		panelLayButtonInResultInTableView.setLayout(new BoxLayout(panelLayButtonInResultInTableView, BoxLayout.Y_AXIS));
+		
+		panelGraphViewInTabbedPane.setLayout(new BorderLayout(0, 0));
+		panelLayGraphInGraphView.setLayout(new BorderLayout(0, 0));
+		panelLayResultInGraphView.setLayout(new BoxLayout(panelLayResultInGraphView, BoxLayout.X_AXIS));
+		panelLayTextAreaInResultInGraphView.setLayout(new BorderLayout(0, 0));
+		panelLayButtonInResultInGraphView.setLayout(new BoxLayout(panelLayButtonInResultInGraphView, BoxLayout.Y_AXIS));
+				
 		initializeListActorPanel();
 		/*-------------底部面板End-----------------*/
 		
@@ -241,12 +308,37 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 		
 		tabbedPane.add(panelTableViewInTabbedPane,"表格");
 		tabbedPane.add(panelGraphViewInTabbedPane,"图形");
+		
+		panelTableViewInTabbedPane.add(splitpaneInTableView);
+		panelGraphViewInTabbedPane.add(splitpaneInGraphView);
+		
+		splitpaneInTableView.setTopComponent(panelLayTableInTableView);
+		splitpaneInTableView.setBottomComponent(panelLayResultInTableView);
+		splitpaneInGraphView.setTopComponent(panelLayGraphInGraphView);
+		splitpaneInGraphView.setBottomComponent(panelLayResultInGraphView);
+//		panelTableViewInTabbedPane.add(panelLayTableInTableView, BorderLayout.CENTER);
+//		panelTableViewInTabbedPane.add(panelLayResultInTableView, BorderLayout.SOUTH);
+//		panelGraphViewInTabbedPane.add(panelLayGraphInGraphView, BorderLayout.CENTER);
+//		panelGraphViewInTabbedPane.add(panelLayResultInGraphView, BorderLayout.SOUTH);
 
+		panelLayResultInTableView.add(panelLayTextAreaInResultInTableView);
+		panelLayResultInTableView.add(panelLayButtonInResultInTableView);
+		panelLayResultInGraphView.add(panelLayTextAreaInResultInGraphView);
+		panelLayResultInGraphView.add(panelLayButtonInResultInGraphView);
+		
+		panelLayTextAreaInResultInTableView.add(new JLabel("<html>结<br/>果</html>"), BorderLayout.WEST);
+		panelLayTextAreaInResultInTableView.add(new JScrollPane(textfieldResultInTableView));
+		panelLayButtonInResultInTableView.add(buttonSaveInResultInTableView);
+		panelLayButtonInResultInTableView.add(buttonResetInResultInTableView);
+		panelLayTextAreaInResultInGraphView.add(new JLabel("<html>结<br/>果</html>"), BorderLayout.WEST);
+		panelLayTextAreaInResultInGraphView.add(new JScrollPane(textfieldResultInGraphView));
+		panelLayButtonInResultInGraphView.add(buttonSaveInResultInGraphView);
+		panelLayButtonInResultInGraphView.add(buttonResetInResultInGraphView);
+		
 		/*-------------底部面板End-----------------*/
 		
-		add(panelTop, BorderLayout.NORTH);
-		add(panelBottom, BorderLayout.CENTER);
-	
+	//	add(panelTop, BorderLayout.NORTH);
+		add(panelBottom, BorderLayout.CENTER);	
 	}
 	
 	public void initializeListActorName() {
@@ -277,6 +369,7 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 				}
 				
 				refreshActorPanel();
+				refreshActorGraphPanel();
 				
 				listActorName.repaint();
 			}
@@ -322,15 +415,6 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 		textfieldActorNameInAddActor=new JTextField();
 		textfieldActorNameInAddActor.setMinimumSize(new Dimension(150,25));
 		textfieldActorNameInAddActor.setMaximumSize(new Dimension(150,30));
-		
-//		textfieldRemark1InAddActor=new JTextArea();		
-//		textfieldRemark2InAddActor=new JTextArea();
-//		textfieldRemark1InAddActor.setLineWrap(true);		//支持自动换行
-//		textfieldRemark2InAddActor.setLineWrap(true);		//支持自动换行
-//		textfieldRemark1InAddActor.setMinimumSize(new Dimension(100,25));
-//		textfieldRemark1InAddActor.setMaximumSize(new Dimension(200,200));
-//		textfieldRemark2InAddActor.setMinimumSize(new Dimension(100,25));
-//		textfieldRemark2InAddActor.setMaximumSize(new Dimension(200,200));
 		
 		buttonConfirmInAddActor=new JButton("确认");
 		buttonCancelInAddActor=new JButton("取消");		
@@ -396,12 +480,12 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 		while(actorPanelDimension*actorPanelDimension < countLoop) {
 			actorPanelDimension++;
 		}		
-		actorPanelWidth = panelTableViewInTabbedPane.getSize().width/actorPanelDimension;
-		actorPanelHeight = panelTableViewInTabbedPane.getSize().height/actorPanelDimension;
+		actorPanelWidth = panelLayTableInTableView.getSize().width/actorPanelDimension;
+		actorPanelHeight = panelLayTableInTableView.getSize().height/actorPanelDimension;
 		
 		//清空原有的参与者面板
 		if(tableDesktop != null) {
-			panelTableViewInTabbedPane.remove(tableDesktop);
+			panelLayTableInTableView.remove(tableDesktop);
 		}
 		
 		//将所有JInternalFrame设置为为无最小化以及未选中状态。解决在添加/删除/筛选参与者后  actorpanel 层次问题【未知缘由】
@@ -438,9 +522,14 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 			}
 		}
 		
-		panelTableViewInTabbedPane.add(tableDesktop);
-		panelTableViewInTabbedPane.revalidate();
-		panelTableViewInTabbedPane.repaint();
+		SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+		textfieldResultInTableView.setText(swotTaskDAO.getTaskResult(swotTask));
+		
+		splitpaneInTableView.setDividerLocation(splitpaneInTableView.getDividerLocation());
+				
+		panelLayTableInTableView.add(tableDesktop);
+		panelLayTableInTableView.revalidate();
+		panelLayTableInTableView.repaint();
 	}
 	
 	public void refreshActorGraphPanel() {
@@ -461,12 +550,12 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 		while(actorPanelDimension*actorPanelDimension < countLoop) {
 			actorPanelDimension++;
 		}		
-		actorPanelWidth = panelTableViewInTabbedPane.getSize().width/actorPanelDimension;
-		actorPanelHeight = panelTableViewInTabbedPane.getSize().height/actorPanelDimension;
+		actorPanelWidth = panelLayGraphInGraphView.getSize().width/actorPanelDimension;
+		actorPanelHeight = panelLayGraphInGraphView.getSize().height/actorPanelDimension;
 		
 		//清空原有的参与者面板
 		if(graphDesktop != null) {
-			panelGraphViewInTabbedPane.remove(graphDesktop);
+			panelLayGraphInGraphView.remove(graphDesktop);
 		}
 		
 		//将所有JInternalFrame设置为为无最小化以及未选中状态。解决在添加/删除/筛选参与者后  actorpanel 层次问题【未知缘由】
@@ -502,10 +591,15 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 				j++;
 			}
 		}
-	
-		panelGraphViewInTabbedPane.add(graphDesktop);
-		panelGraphViewInTabbedPane.revalidate();
-		panelGraphViewInTabbedPane.repaint();
+
+		SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+		textfieldResultInGraphView.setText(swotTaskDAO.getTaskResult(swotTask));
+		
+		splitpaneInGraphView.setDividerLocation(splitpaneInGraphView.getDividerLocation());
+		
+		panelLayGraphInGraphView.add(graphDesktop);
+		panelLayGraphInGraphView.revalidate();
+		panelLayGraphInGraphView.repaint();
 	}
 
 	@Override
@@ -609,24 +703,10 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 			
 			//【此处修改默认添加actor列表~~~start】
 			SwotActor swotActor = new SwotActor();
-			swotActor.setActorName("name1");
+			swotActor.setActorName("某部队");
 			listModelSwotActor.addElement(swotActor);
 			swotActorDAO.addActor(swotTask, swotActor);
-			
-			SwotActor swotActor2 = new SwotActor();
-			swotActor2.setActorName("name2");
-			listModelSwotActor.addElement(swotActor2);
-			swotActorDAO.addActor(swotTask, swotActor2);
-			
-			SwotActor swotActor3 = new SwotActor();
-			swotActor3.setActorName("name3");
-			listModelSwotActor.addElement(swotActor3);
-			swotActorDAO.addActor(swotTask, swotActor3);
-			
-			SwotActor swotActor4 = new SwotActor();
-			swotActor4.setActorName("name4");
-			listModelSwotActor.addElement(swotActor4);
-			swotActorDAO.addActor(swotTask, swotActor4);
+
 			//【此处修改默认添加actor列表~~~end】
 			
 			for(int i = 0; i<listModelSwotActor.size(); i++){	
@@ -641,9 +721,6 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 				//【此处if里面修改默认参与者属性~~~~start，有几个actor就有几个if判断】
 				SwotActorPanel newActorPanel = new SwotActorPanel(listModelSwotActor.getElementAt(i));
 				List<SwotActorProperty> swotPropertyList1 = new ArrayList<SwotActorProperty>();
-				List<SwotActorProperty> swotPropertyList2 = new ArrayList<SwotActorProperty>();;
-				List<SwotActorProperty> swotPropertyList3 = new ArrayList<SwotActorProperty>();;
-				List<SwotActorProperty> swotPropertyList4 = new ArrayList<SwotActorProperty>();;
 				if(i == 0){		//第一个actor属性
 					dtm = (DefaultTableModel)newActorPanel.getInsertTable("advantage").getModel();		//为advantage添加4个条目
 					dtm.setValueAt(1, 0, 0);dtm.setValueAt("资源丰富", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
@@ -732,292 +809,7 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 					swotPropertyList1.add(swotActorProperty8);
 					swotPropertyList1.add(swotActorProperty9);
 					swotPropertyList1.add(swotActorProperty10);
-				} else if(i == 1){		//第二个actor属性
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("advantage").getModel();		//为advantage添加4个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("advantageContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent2", 2});	
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent3", 3});	
-					SwotActorProperty swotActorProperty0 = new SwotActorProperty();
-					swotActorProperty0.setPropertyType("advantage");
-					swotActorProperty0.setPropertyContent("advantageContent0");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty0);
-					SwotActorProperty swotActorProperty1 = new SwotActorProperty();
-					swotActorProperty1.setPropertyType("advantage");
-					swotActorProperty1.setPropertyContent("advantageContent1");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty1);
-					SwotActorProperty swotActorProperty2 = new SwotActorProperty();
-					swotActorProperty2.setPropertyType("advantage");
-					swotActorProperty2.setPropertyContent("advantageContent2");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty2);
-					SwotActorProperty swotActorProperty3 = new SwotActorProperty();
-					swotActorProperty3.setPropertyType("advantage");
-					swotActorProperty3.setPropertyContent("advantageContent3");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty3);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("chance").getModel();		//为chance添加3个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("chanceContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "chanceContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "chanceContent2", 2});	
-					SwotActorProperty swotActorProperty34 = new SwotActorProperty();
-					swotActorProperty34.setPropertyType("chance");
-					swotActorProperty34.setPropertyContent("chanceContent0");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty34);
-					SwotActorProperty swotActorProperty4 = new SwotActorProperty();
-					swotActorProperty4.setPropertyType("chance");
-					swotActorProperty4.setPropertyContent("chanceContent1");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty4);
-					SwotActorProperty swotActorProperty5 = new SwotActorProperty();
-					swotActorProperty5.setPropertyType("chance");
-					swotActorProperty5.setPropertyContent("chanceContent2");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty5);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("disadvantage").getModel();	//为disadvantage添加3个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("disadvantageContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "disadvantageContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "disadvantageContent2", 2});
-					SwotActorProperty swotActorProperty56 = new SwotActorProperty();
-					swotActorProperty56.setPropertyType("disadvantage");
-					swotActorProperty56.setPropertyContent("disadvantageContent56");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty56);
-					SwotActorProperty swotActorProperty6 = new SwotActorProperty();
-					swotActorProperty6.setPropertyType("disadvantage");
-					swotActorProperty6.setPropertyContent("disadvantageContent1");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty6);
-					SwotActorProperty swotActorProperty7 = new SwotActorProperty();
-					swotActorProperty7.setPropertyType("disadvantage");
-					swotActorProperty7.setPropertyContent("disadvantageContent2");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty7);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("threat").getModel();		//为threat添加5个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("threatContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent2", 2});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent3", 3});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent4", 4});
-					SwotActorProperty swotActorProperty78 = new SwotActorProperty();
-					swotActorProperty78.setPropertyType("threat");
-					swotActorProperty78.setPropertyContent("threatContent0");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty78);
-					SwotActorProperty swotActorProperty8 = new SwotActorProperty();
-					swotActorProperty8.setPropertyType("threat");
-					swotActorProperty8.setPropertyContent("threatContent1");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty8);
-					SwotActorProperty swotActorProperty9 = new SwotActorProperty();
-					swotActorProperty9.setPropertyType("threat");
-					swotActorProperty9.setPropertyContent("threatContent2");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty9);
-					SwotActorProperty swotActorProperty10 = new SwotActorProperty();
-					swotActorProperty10.setPropertyType("threat");
-					swotActorProperty10.setPropertyContent("threatContent3");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty10);
-					SwotActorProperty swotActorProperty11 = new SwotActorProperty();
-					swotActorProperty11.setPropertyType("threat");
-					swotActorProperty11.setPropertyContent("threatContent4");
-					swotPropertyDAO.addProperty(swotActor2, swotActorProperty11);
-					
-					swotPropertyList2.add(swotActorProperty1);
-					swotPropertyList2.add(swotActorProperty2);
-					swotPropertyList2.add(swotActorProperty3);
-					swotPropertyList2.add(swotActorProperty4);
-					swotPropertyList2.add(swotActorProperty5);
-					swotPropertyList2.add(swotActorProperty6);
-					swotPropertyList2.add(swotActorProperty7);
-					swotPropertyList2.add(swotActorProperty8);
-					swotPropertyList2.add(swotActorProperty9);
-					swotPropertyList2.add(swotActorProperty10);
-					swotPropertyList2.add(swotActorProperty11);
-				}else if(i == 2){
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("advantage").getModel();		//为advantage添加4个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("advantageContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent2", 2});	
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent3", 3});	
-					SwotActorProperty swotActorProperty0 = new SwotActorProperty();
-					swotActorProperty0.setPropertyType("advantage");
-					swotActorProperty0.setPropertyContent("advantageContent0");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty0);
-					SwotActorProperty swotActorProperty1 = new SwotActorProperty();
-					swotActorProperty1.setPropertyType("advantage");
-					swotActorProperty1.setPropertyContent("advantageContent1");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty1);
-					SwotActorProperty swotActorProperty2 = new SwotActorProperty();
-					swotActorProperty2.setPropertyType("advantage");
-					swotActorProperty2.setPropertyContent("advantageContent2");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty2);
-					SwotActorProperty swotActorProperty3 = new SwotActorProperty();
-					swotActorProperty3.setPropertyType("advantage");
-					swotActorProperty3.setPropertyContent("advantageContent3");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty3);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("chance").getModel();		//为chance添加3个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("chanceContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "chanceContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "chanceContent2", 2});	
-					SwotActorProperty swotActorProperty34 = new SwotActorProperty();
-					swotActorProperty34.setPropertyType("chance");
-					swotActorProperty34.setPropertyContent("chanceContent0");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty34);
-					SwotActorProperty swotActorProperty4 = new SwotActorProperty();
-					swotActorProperty4.setPropertyType("chance");
-					swotActorProperty4.setPropertyContent("chanceContent1");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty4);
-					SwotActorProperty swotActorProperty5 = new SwotActorProperty();
-					swotActorProperty5.setPropertyType("chance");
-					swotActorProperty5.setPropertyContent("chanceContent2");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty5);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("disadvantage").getModel();	//为disadvantage添加3个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("disadvantageContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "disadvantageContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "disadvantageContent2", 2});
-					SwotActorProperty swotActorProperty56 = new SwotActorProperty();
-					swotActorProperty56.setPropertyType("disadvantage");
-					swotActorProperty56.setPropertyContent("disadvantageContent0");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty56);
-					SwotActorProperty swotActorProperty6 = new SwotActorProperty();
-					swotActorProperty6.setPropertyType("disadvantage");
-					swotActorProperty6.setPropertyContent("disadvantageContent1");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty6);
-					SwotActorProperty swotActorProperty7 = new SwotActorProperty();
-					swotActorProperty7.setPropertyType("disadvantage");
-					swotActorProperty7.setPropertyContent("disadvantageContent2");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty7);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("threat").getModel();		//为threat添加5个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("threatContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent2", 2});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent3", 3});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent4", 4});
-					SwotActorProperty swotActorProperty78 = new SwotActorProperty();
-					swotActorProperty78.setPropertyType("threat");
-					swotActorProperty78.setPropertyContent("threatContent0");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty78);
-					SwotActorProperty swotActorProperty8 = new SwotActorProperty();
-					swotActorProperty8.setPropertyType("threat");
-					swotActorProperty8.setPropertyContent("threatContent1");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty8);
-					SwotActorProperty swotActorProperty9 = new SwotActorProperty();
-					swotActorProperty9.setPropertyType("threat");
-					swotActorProperty9.setPropertyContent("threatContent2");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty9);
-					SwotActorProperty swotActorProperty10 = new SwotActorProperty();
-					swotActorProperty10.setPropertyType("threat");
-					swotActorProperty10.setPropertyContent("threatContent3");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty10);
-					SwotActorProperty swotActorProperty11 = new SwotActorProperty();
-					swotActorProperty11.setPropertyType("threat");
-					swotActorProperty11.setPropertyContent("threatContent4");
-					swotPropertyDAO.addProperty(swotActor3, swotActorProperty11);
-					
-					swotPropertyList3.add(swotActorProperty1);
-					swotPropertyList3.add(swotActorProperty2);
-					swotPropertyList3.add(swotActorProperty3);
-					swotPropertyList3.add(swotActorProperty4);
-					swotPropertyList3.add(swotActorProperty5);
-					swotPropertyList3.add(swotActorProperty6);
-					swotPropertyList3.add(swotActorProperty7);
-					swotPropertyList3.add(swotActorProperty8);
-					swotPropertyList3.add(swotActorProperty9);
-					swotPropertyList3.add(swotActorProperty10);
-					swotPropertyList3.add(swotActorProperty11);
-				}else if(i == 3){
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("advantage").getModel();		//为advantage添加4个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("advantageContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent2", 2});	
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "advantageContent3", 3});	
-					SwotActorProperty swotActorProperty0 = new SwotActorProperty();
-					swotActorProperty0.setPropertyType("advantage");
-					swotActorProperty0.setPropertyContent("advantageContent0");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty0);
-					SwotActorProperty swotActorProperty1 = new SwotActorProperty();
-					swotActorProperty1.setPropertyType("advantage");
-					swotActorProperty1.setPropertyContent("advantageContent1");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty1);
-					SwotActorProperty swotActorProperty2 = new SwotActorProperty();
-					swotActorProperty2.setPropertyType("advantage");
-					swotActorProperty2.setPropertyContent("advantageContent2");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty2);
-					SwotActorProperty swotActorProperty3 = new SwotActorProperty();
-					swotActorProperty3.setPropertyType("advantage");
-					swotActorProperty3.setPropertyContent("advantageContent3");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty3);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("chance").getModel();		//为chance添加3个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("chanceContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "chanceContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "chanceContent2", 2});	
-					SwotActorProperty swotActorProperty34 = new SwotActorProperty();
-					swotActorProperty34.setPropertyType("chance");
-					swotActorProperty34.setPropertyContent("chanceContent0");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty34);
-					SwotActorProperty swotActorProperty4 = new SwotActorProperty();
-					swotActorProperty4.setPropertyType("chance");
-					swotActorProperty4.setPropertyContent("chanceContent1");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty4);
-					SwotActorProperty swotActorProperty5 = new SwotActorProperty();
-					swotActorProperty5.setPropertyType("chance");
-					swotActorProperty5.setPropertyContent("chanceContent2");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty5);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("disadvantage").getModel();	//为disadvantage添加3个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("disadvantageContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "disadvantageContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "disadvantageContent2", 2});
-					SwotActorProperty swotActorProperty56 = new SwotActorProperty();
-					swotActorProperty56.setPropertyType("disadvantage");
-					swotActorProperty56.setPropertyContent("disadvantageContent0");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty56);
-					SwotActorProperty swotActorProperty6 = new SwotActorProperty();
-					swotActorProperty6.setPropertyType("disadvantage");
-					swotActorProperty6.setPropertyContent("disadvantageContent1");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty6);
-					SwotActorProperty swotActorProperty7 = new SwotActorProperty();
-					swotActorProperty7.setPropertyType("disadvantage");
-					swotActorProperty7.setPropertyContent("disadvantageContent2");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty7);
-					
-					dtm = (DefaultTableModel)newActorPanel.getInsertTable("threat").getModel();		//为threat添加5个条目
-					dtm.setValueAt(1, 0, 0);dtm.setValueAt("threatContent0", 0, 1);dtm.setValueAt(0, 0, 2);		//第一行比较特殊
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent1", 1});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent2", 2});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent3", 3});
-					dtm.addRow(new Object[]{dtm.getRowCount()+1, "threatContent4", 4});
-					SwotActorProperty swotActorProperty78 = new SwotActorProperty();
-					swotActorProperty78.setPropertyType("threat");
-					swotActorProperty78.setPropertyContent("threatContent0");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty78);
-					SwotActorProperty swotActorProperty8 = new SwotActorProperty();
-					swotActorProperty8.setPropertyType("threat");
-					swotActorProperty8.setPropertyContent("threatContent1");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty8);
-					SwotActorProperty swotActorProperty9 = new SwotActorProperty();
-					swotActorProperty9.setPropertyType("threat");
-					swotActorProperty9.setPropertyContent("threatContent2");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty9);
-					SwotActorProperty swotActorProperty10 = new SwotActorProperty();
-					swotActorProperty10.setPropertyType("threat");
-					swotActorProperty10.setPropertyContent("threatContent3");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty10);
-					SwotActorProperty swotActorProperty11 = new SwotActorProperty();
-					swotActorProperty11.setPropertyType("threat");
-					swotActorProperty11.setPropertyContent("threatContent4");
-					swotPropertyDAO.addProperty(swotActor4, swotActorProperty11);
-					
-					swotPropertyList4.add(swotActorProperty1);
-					swotPropertyList4.add(swotActorProperty2);
-					swotPropertyList4.add(swotActorProperty3);
-					swotPropertyList4.add(swotActorProperty4);
-					swotPropertyList4.add(swotActorProperty5);
-					swotPropertyList4.add(swotActorProperty6);
-					swotPropertyList4.add(swotActorProperty7);
-					swotPropertyList4.add(swotActorProperty8);
-					swotPropertyList4.add(swotActorProperty9);
-					swotPropertyList4.add(swotActorProperty10);
-					swotPropertyList4.add(swotActorProperty11);
-				}
+				} 
 				//【此处if里面修改默认参与者属性~~~~end，有几个actor就有几个if判断】
 
 				listModelActorPanel.addElement(newActorPanel);
@@ -1025,12 +817,6 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 				//【此处if里面修改默认参与者属性（图形面板）~~~~start，有几个actor就有几个if判断】
 				if(i == 0){
 					newActorGraphPanel = new SwotActorGraphPanel(listModelSwotActor.getElementAt(i), swotPropertyList1);
-				}else if(i == 1){
-					newActorGraphPanel = new SwotActorGraphPanel(listModelSwotActor.getElementAt(i), swotPropertyList2);
-				}else if(i == 2){
-					newActorGraphPanel = new SwotActorGraphPanel(listModelSwotActor.getElementAt(i), swotPropertyList3);
-				}else if(i == 3){
-					newActorGraphPanel = new SwotActorGraphPanel(listModelSwotActor.getElementAt(i), swotPropertyList4);
 				}
 				//【此处if里面修改默认参与者属性（图形面板）~~~~end，有几个actor就有几个if判断】
 					
@@ -1077,6 +863,22 @@ public class SwotEditPanel extends JPanel implements ActionListener{
 			countSelectedActor = 0;		//初始化筛选显示参与者面板的个数	
 			refreshActorPanel();	
 			refreshActorGraphPanel();
+		}
+		else if(e.getSource() == buttonSaveInResultInTableView)	{		//表格界面结果保存
+			SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+			swotTask.setMark1(textfieldResultInTableView.getText());
+			swotTaskDAO.updateTaskResult(swotTask);
+		}
+		else if(e.getSource() == buttonResetInResultInTableView)	{		//表格界面结果保存
+			textfieldResultInTableView.setText("");
+		}
+		else if(e.getSource() == buttonSaveInResultInGraphView)	{		//图形界面结果保存
+			SwotTaskDAO swotTaskDAO = new SwotTaskDAO();
+			swotTask.setMark1(textfieldResultInGraphView.getText());;
+			swotTaskDAO.updateTaskResult(swotTask);
+		}
+		else if(e.getSource() == buttonResetInResultInGraphView)	{		//图形界面结果保存
+			textfieldResultInGraphView.setText("");
 		}
 	}
 }

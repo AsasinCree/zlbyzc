@@ -31,22 +31,14 @@
  */
 package zlbyzc;
 
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.embed.swing.JFXPanel;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebEvent;
-import javafx.scene.web.WebView;
-import javafx.stage.Window; 
+
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyVetoException;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
@@ -60,41 +52,82 @@ import org.pushingpixels.flamingo.api.common.*;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.icon.*;
 import org.pushingpixels.flamingo.api.common.popup.*;
-import org.pushingpixels.flamingo.api.common.popup.PopupPanelManager.PopupEvent;
-import org.pushingpixels.flamingo.api.common.popup.PopupPanelManager.PopupListener;
+
 import org.pushingpixels.flamingo.api.ribbon.*;
 import org.pushingpixels.flamingo.api.ribbon.resize.*;
 import org.pushingpixels.flamingo.internal.utils.RenderingUtils;
 
-import zlbyzc.LookAndFeelSwitcher;
+import db.MyPath;
+import db.SettingUI;
 import zlbyzc.gui.ImageTask;
-import zlbyzc.gui.SpringUtilities;
+
+import zlbyzc.gui.SimpleSwingBrowser;
+
 import zlbyzc.sub3.CommandExec;
-import zlbyzc.sub3.stats.statPy;
+
+import zlbyzc.sub3.stats.statR;
 import test.svg.transcoded.*;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-
+import zlbyzc.gui.SplashScreenFrame;
+import zlbyzc.gui.mangeFrames;
+import zlbyzc.gui.test.TwoRoot;
+//import chrriis.dj.nativeswing.swtimpl.NativeInterface;
+//import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
 import icy.resource.ResourceUtil;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+
+
  
-import static javafx.concurrent.Worker.State.FAILED;
+
 
 public class BasicRibbon extends JRibbonFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected static SplashScreenFrame splashScreen;
 	protected Locale currLocale;
     protected RibbonTask statsTask ;
+    protected RibbonTask riskTask ;
 	protected ResourceBundle resourceBundle;	 
 	protected ResourceBundle messagesRes;
 	JSplitPane mainPane;
 	private final mainDesk maindesktop;
 	JPanel centerPanel;
 	protected CommandExec cmdexec;
+	public SettingUI setting;
+	mangeFrames inFrameManger;
+	BasicRibbon me;
 	public mainDesk getDesktopPane()
     {
         return maindesktop;
+    }
+	private List<JCommandButton> downloadButton ;
+	public statR statInFra;
+	//final JWebBrowser webBrowser;
+	private JCommandButton theStatsButton;
+	public void enableScriptDownload(boolean e){
+		downloadButton.get(0).setEnabled(e);
+	}
+	public void enableFormatDownload(boolean e){
+		for (JCommandButton jb:downloadButton)
+			jb.setEnabled(e);
+	}
+	public void enableDir(boolean e){
+		filesButton.get(1).setEnabled(e);
+		filesButton.get(2).setEnabled(e);
+	}
+	public void enableFile(boolean e){
+		filesButton.get(0).setEnabled(e);
+		//filesButton.get(2).setEnabled(e);
+	}
+	public void enableStatsButt(boolean e){
+		theStatsButton.setEnabled(e);
+	}
+	SimpleSwingBrowser sSwingBrowser;
+	private ArrayList<JCommandButton> filesButton;
+	public SimpleSwingBrowser getHelpView()
+    {
+        return sSwingBrowser;
     }
 	protected class QuickStylesPanel extends JCommandButtonPanel {
 		public QuickStylesPanel() {
@@ -250,50 +283,7 @@ public class BasicRibbon extends JRibbonFrame {
 		return button;
 	}
 
-	protected JRibbonBand getDocumentBand() {
-		JRibbonBand result = new JRibbonBand("文档",
-				new applications_office(), new ExpandActionListener());
-		result.setExpandButtonKeyTip("FY");
-		result.setCollapsedStateKeyTip("ZD");
-
-		result.startGroup();
-		
-		JCommandButton localFolderButton = new JCommandButton("打开脚本文件", new folder());
-		result.addCommandButton(localFolderButton, RibbonElementPriority.TOP);
-		
-
-		JCommandButton savedFolderButton = new JCommandButton("保存脚本文件", new folder_saved_search());
-		result.addCommandButton(savedFolderButton, RibbonElementPriority.TOP);
-
-		result.startGroup();
-
-		JCommandButton docNewButton = new JCommandButton("新建脚本", new document_new());
-		result.addCommandButton(docNewButton, RibbonElementPriority.MEDIUM);
-
-		JCommandButton docOpenButton = new JCommandButton("最近使用文件", new document_open());
-		result.addCommandButton(docOpenButton, RibbonElementPriority.MEDIUM);
-
-		JCommandButton docSaveButton = new JCommandButton("保存所有文件", new document_save());
-		result.addCommandButton(docSaveButton, RibbonElementPriority.MEDIUM);
-
-		JCommandButton docPrintButton = new JCommandButton("打印", new document_print());
-		result.addCommandButton(docPrintButton, RibbonElementPriority.MEDIUM);
-
-		JCommandButton docPrintPreviewButton = new JCommandButton("打印预览",
-				new document_print_preview());
-		result.addCommandButton(docPrintPreviewButton,
-				RibbonElementPriority.MEDIUM);
-
-		JCommandButton docPropertiesButton = new JCommandButton("属性",
-				new document_properties());
-		result.addCommandButton(docPropertiesButton,
-				RibbonElementPriority.MEDIUM);
-
-		result.setResizePolicies(CoreRibbonResizePolicies
-				.getCorePoliciesRestrictive(result));
-
-		return result;
-	}
+	
 
 	protected JRibbonBand getClipboardBand() {
 		JRibbonBand clipboardBand = new JRibbonBand("脚本编辑", new edit_paste(),
@@ -495,6 +485,33 @@ public class BasicRibbon extends JRibbonFrame {
 		JCommandButton pythonButton = new JCommandButton("模糊综合评判", py_icon);
 		ResizableIcon egpy_icon=ImageTask.getResizableIconFromResource("/img/icons/dea.png");
 		JCommandButton egpythonButton = new JCommandButton("DEA数据包络", egpy_icon);
+		swotButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartAhp();	
+				
+			}
+		});
+		swotegButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartAnp();	
+			}
+		});
+		
+		pythonButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartfuzzy();	
+			}
+		});
+		
+		egpythonButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartdea();	
+			}
+		});
 		statsBand.addCommandButton(swotButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(swotegButton, RibbonElementPriority.TOP);
@@ -509,13 +526,69 @@ public class BasicRibbon extends JRibbonFrame {
 
 		return statsBand;
 	}	
-	
+	protected JRibbonBand getJudgeRunBand() {
+		ResizableIcon stats_icon=ImageTask.getResizableIconFromResource("/img/icons/qjfx.png");
+		JRibbonBand statsBand = new JRibbonBand("查询", stats_icon);
+		statsBand.setExpandButtonKeyTip("FO");
+		RichTooltip expandRichTooltip = new RichTooltip();
+		expandRichTooltip.setTitle(resourceBundle
+				.getString("Clipboard.textBandTitle"));
+		expandRichTooltip.addDescriptionSection(resourceBundle
+				.getString("Clipboard.textBandTooltipParagraph1"));
+		statsBand.setExpandButtonRichTooltip(expandRichTooltip);
+		statsBand.setCollapsedStateKeyTip("ZC");
+
+		ResizableIcon ahprefer_icon=ImageTask.getResizableIconFromResource("/img/icons/refer.png");
+		JCommandButton ahpreferButton = new JCommandButton("AHP结果查询", ahprefer_icon);
+		ResizableIcon anprefer_icon=ImageTask.getResizableIconFromResource("/img/icons/refer.png");
+		JCommandButton anpreferButton = new JCommandButton("ANP结果查询", anprefer_icon);
+		ResizableIcon fuzzyrefer_icon=ImageTask.getResizableIconFromResource("/img/icons/refer.png");
+		JCommandButton fuzzyreferButton = new JCommandButton("模糊结果查询", fuzzyrefer_icon);
+		ResizableIcon dearefer_icon=ImageTask.getResizableIconFromResource("/img/icons/refer.png");
+		JCommandButton deareferButton = new JCommandButton("DEA结果查询", dearefer_icon);
+		ahpreferButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartAhpQuery();	
+			}
+		});
+		fuzzyreferButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartfuzzyrefer();	
+			}
+		});
+		deareferButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartdearefer();	
+			}
+		});
+		anpreferButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartanprefer();	
+			}
+		});
+		
+		statsBand.addCommandButton(ahpreferButton, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(anpreferButton, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(fuzzyreferButton, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(deareferButton, RibbonElementPriority.TOP);
+		
+		
+		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
+		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
+				.getControlPanel()));
+		resizePolicies.add(new CoreRibbonResizePolicies.Mid2Low(statsBand
+				.getControlPanel()));
+		statsBand.setResizePolicies(resizePolicies);
+
+		return statsBand;
+	}
 	protected JRibbonBand getAnaBand() {
 		
-		//做一次查询操作，为了解决初次访问数据库卡顿时间
-		zlbyzc.sub3.analysis.services.SwotTaskDAO swotTaskDAO = new zlbyzc.sub3.analysis.services.SwotTaskDAO();		
-		swotTaskDAO.getAllSwotTasks();		
-		
+				
 		ResizableIcon stats_icon=ImageTask.getResizableIconFromResource("/img/icons/analysis_sub.png");
 		JRibbonBand statsBand = new JRibbonBand("请选择子模块", stats_icon,
 				new ExpandActionListener());
@@ -544,7 +617,6 @@ public class BasicRibbon extends JRibbonFrame {
 				cmdexec.execStartSearchSwot();	
 			}
 		});
-		
 		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/qjfx.png");
 		JCommandButton pythonButton = new JCommandButton("情景分析法", py_icon);
 		ResizableIcon egpy_icon=ImageTask.getResizableIconFromResource("/img/icons/qjfx-eg.png");
@@ -561,7 +633,6 @@ public class BasicRibbon extends JRibbonFrame {
 				cmdexec.execStartSearchScenario();	
 			}
 		});
-		
 		statsBand.addCommandButton(swotButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(swotegButton, RibbonElementPriority.MEDIUM);
@@ -591,12 +662,44 @@ public class BasicRibbon extends JRibbonFrame {
 		statsBand.setExpandButtonRichTooltip(expandRichTooltip);
 		statsBand.setCollapsedStateKeyTip("ZC");
 
-		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/fullgame.png");
-		JCommandButton pythonButton = new JCommandButton("完全信息博弈博弈", py_icon);
-		ResizableIcon py_icon2=ImageTask.getResizableIconFromResource("/img/icons/nofullgame.png");
-		JCommandButton pythonButton2 = new JCommandButton("不完全信息博弈博弈", py_icon2);
+		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/matrixupdate.png");
+		JCommandButton pythonButton = new JCommandButton("完全信息静态博弈编辑", py_icon);
+		ResizableIcon py_icon2=ImageTask.getResizableIconFromResource("/img/icons/treeupdate.png");
+		JCommandButton pythonButton2 = new JCommandButton("其它博弈编辑", py_icon2);
+		ResizableIcon py_icon3=ImageTask.getResizableIconFromResource("/img/icons/matrixquery.png");
+		JCommandButton pythonButton3 = new JCommandButton("完全信息静态博弈查询", py_icon3);
+		ResizableIcon py_icon4=ImageTask.getResizableIconFromResource("/img/icons/treequery.png");
+		JCommandButton pythonButton4 = new JCommandButton("其它博弈查询", py_icon4);
+		
+		
+		pythonButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execGameMatrix();	
+			}
+		});
+		pythonButton2.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execGameTree();	
+			}
+		});
+		pythonButton3.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execGameMatrixQuery();	
+			}
+		});
+		pythonButton4.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execGameTreeQuery();	
+			}
+		});
 		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(pythonButton2, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(pythonButton3, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(pythonButton4, RibbonElementPriority.TOP);
 
 		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
 		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
@@ -624,24 +727,17 @@ public class BasicRibbon extends JRibbonFrame {
 		statsBand.setCollapsedStateKeyTip("ZC");
 
 		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/python-144x144.png");
-		JCommandButton pythonButton = new JCommandButton("Python", py_icon);
-		ResizableIcon r_icon=ImageTask.getResizableIconFromResource("/img/icons/rlang.png");
-		JCommandButton rButton = new JCommandButton("R", r_icon);
-		pythonButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartPy();	
-			}
-		});
-		rButton.addActionListener(new ActionListener() {
+		theStatsButton = new JCommandButton("统计分析", py_icon);
+		theStatsButton.addActionListener(new ActionListener() {
 			@Override
             public void actionPerformed(ActionEvent e) {
 				cmdexec.execStartR();	
 			}
 		});
 		
-		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(rButton, RibbonElementPriority.TOP);
+		
+		statsBand.addCommandButton(theStatsButton, RibbonElementPriority.TOP);
+		//statsBand.addCommandButton(rButton, RibbonElementPriority.TOP);
 
 		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
 		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
@@ -652,10 +748,10 @@ public class BasicRibbon extends JRibbonFrame {
 
 		return statsBand;
 	}	
-
-	protected JRibbonBand getStatsRunBand() {
+	protected JRibbonBand getDocumentBand() {
+		filesButton= new ArrayList<JCommandButton>();
 		ResizableIcon stats_icon=ImageTask.getResizableIconFromResource("/img/icons/stats.png");
-		JRibbonBand statsBand = new JRibbonBand("脚本运行", stats_icon,
+		JRibbonBand statsBand = new JRibbonBand("文件操作", stats_icon,
 				new ExpandActionListener());
 		statsBand.setExpandButtonKeyTip("FO");
 		RichTooltip expandRichTooltip = new RichTooltip();
@@ -666,22 +762,147 @@ public class BasicRibbon extends JRibbonFrame {
 		statsBand.setExpandButtonRichTooltip(expandRichTooltip);
 		statsBand.setCollapsedStateKeyTip("ZC");
 
-		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/run.png");
-		JCommandButton pythonButton = new JCommandButton("运行", py_icon);
-		ResizableIcon r_icon=ImageTask.getResizableIconFromResource("/img/icons/runas.png");
-		JCommandButton rButton = new JCommandButton("以制定参数运行", r_icon);
-		ResizableIcon im_icon=ImageTask.getResizableIconFromResource("/img/icons/data-import.png");
-		JCommandButton imButton = new JCommandButton("导入数据", im_icon);
-		ResizableIcon ex_icon=ImageTask.getResizableIconFromResource("/img/icons/export-data.png");
-		JCommandButton exButton = new JCommandButton("导出数据", ex_icon);
 		
+		
+		JCommandButton mvFileButton = new JCommandButton("文件更名", new document_save());
+		mvFileButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.rename();	
+			}
+		});
+		mvFileButton.setEnabled(false);
+		statsBand.addCommandButton(mvFileButton, RibbonElementPriority.TOP);
+		JCommandButton newFileButton = new JCommandButton("新建文件夹", new folder());
+		newFileButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.newDir();	
+			}
+		});
+		newFileButton.setEnabled(true);
+		statsBand.addCommandButton(newFileButton, RibbonElementPriority.MEDIUM);
+		JCommandButton mvDir = new JCommandButton("文件夹更名", new folder_remote());
+		mvDir.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.mvDir();	
+			}
+		});
+		mvDir.setEnabled(false);
+		statsBand.addCommandButton(mvDir, RibbonElementPriority.MEDIUM);
+		
+		
+		
+		filesButton.add(mvFileButton);
+		filesButton.add(newFileButton);
+		filesButton.add(mvDir);
+		
+												
+		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
+		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
+				.getControlPanel()));
+		resizePolicies.add(new CoreRibbonResizePolicies.Mid2Low(statsBand
+				.getControlPanel()));
+		statsBand.setResizePolicies(resizePolicies);
+		enableDir(false);
+		return statsBand;
+	}
+	protected JRibbonBand getStatsRunBand() {
+		downloadButton= new ArrayList<JCommandButton>();
+		ResizableIcon stats_icon=ImageTask.getResizableIconFromResource("/img/icons/stats.png");
+		JRibbonBand statsBand = new JRibbonBand("按指定格式将统计资料下载到本地", stats_icon,
+				new ExpandActionListener());
+		statsBand.setExpandButtonKeyTip("FO");
+		RichTooltip expandRichTooltip = new RichTooltip();
+		expandRichTooltip.setTitle(resourceBundle
+				.getString("Clipboard.textBandTitle"));
+		expandRichTooltip.addDescriptionSection(resourceBundle
+				.getString("Clipboard.textBandTooltipParagraph1"));
+		statsBand.setExpandButtonRichTooltip(expandRichTooltip);
+		statsBand.setCollapsedStateKeyTip("ZC");
 
-		statsBand.addCommandButton(imButton, RibbonElementPriority.TOP);
+		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/script.png");
+		JCommandButton pythonButton = new JCommandButton("程序脚本原始格式", py_icon);
+		pythonButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.download("files");	
+			}
+		});
+		ResizableIcon r_icon=ImageTask.getResizableIconFromResource("/img/icons/html.png");
+		JCommandButton rButton = new JCommandButton("网页格式", r_icon);
+		rButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.download("html");	
+			}
+		});
+		ResizableIcon im_icon=ImageTask.getResizableIconFromResource("/img/icons/rst.png");
+		JCommandButton imButton = new JCommandButton("reStructuredText", im_icon);
+		imButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.download("rst");	
+			}
+		});
+		ResizableIcon ex_icon=ImageTask.getResizableIconFromResource("/img/icons/export-data.png");
+		JCommandButton exButton = new JCommandButton("Notebook格式", ex_icon);
+		exButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.download("notebook");	
+			}
+		});
+		
+		ResizableIcon md_icon=ImageTask.getResizableIconFromResource("/img/icons/md.png");
+		JCommandButton mdButton = new JCommandButton("MarkDown", md_icon);
+		mdButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.download("markdown");	
+			}
+		});
+		ResizableIcon pdf_icon=ImageTask.getResizableIconFromResource("/img/icons/pdf.png");
+		JCommandButton pdfButton = new JCommandButton("PDF", pdf_icon);
+		pdfButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				if(statInFra!=null)
+				statInFra.download("pdf");	
+			}
+		});
+		
+		
+		pdfButton.setEnabled(false);
+		exButton.setEnabled(false);
+		pythonButton.setEnabled(false);
+		rButton.setEnabled(false);
+		imButton.setEnabled(false);
+		mdButton.setEnabled(false);
+		downloadButton.add(pythonButton);
+		downloadButton.add(exButton);
+		
+		downloadButton.add(rButton);
+		downloadButton.add(imButton);
+		downloadButton.add(mdButton);
+		downloadButton.add(pdfButton);
 		
 		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(rButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(exButton, RibbonElementPriority.TOP);
-		
+		statsBand.addCommandButton(rButton, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(imButton, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(mdButton, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(pdfButton, RibbonElementPriority.TOP);
+										
 		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
 		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
 				.getControlPanel()));
@@ -709,13 +930,43 @@ public class BasicRibbon extends JRibbonFrame {
 		
 		ResizableIcon py_icon2=ImageTask.getResizableIconFromResource("/img/icons/mjc.png");
 		JCommandButton pythonButton2 = new JCommandButton("马尔科夫决策", py_icon2);
+		pythonButton2.addActionListener(new ActionListener() {
+			@Override
+	         public void actionPerformed(ActionEvent e) {
+			cmdexec.mjc();	
+				}
+			});
 		ResizableIcon py_icon3=ImageTask.getResizableIconFromResource("/img/icons/jctree.png");
-		JCommandButton pythonButton3 = new JCommandButton("决策树", py_icon3);
-		
+		JCommandButton pythonButton3 = new JCommandButton("决策树(1)", py_icon3);
+		pythonButton3.addActionListener(new ActionListener() {
+			@Override
+	         public void actionPerformed(ActionEvent e) {
+			cmdexec.jcs();	
+				}
+			});
+		ResizableIcon py_icon33=ImageTask.getResizableIconFromResource("/img/icons/jctree.png");
+		JCommandButton pythonButton33 = new JCommandButton("决策树(2)", py_icon33);
+		pythonButton33.addActionListener(new ActionListener() {
+			@Override
+	         public void actionPerformed(ActionEvent e) {
+			cmdexec.jcs2();	
+				}
+			});
+		ResizableIcon py_icon4=ImageTask.getResizableIconFromResource("/img/icons/duozhunze.png");
+		JCommandButton pythonButton4 = new JCommandButton("多准则", py_icon4);
+		pythonButton4.addActionListener(new ActionListener() {
+			@Override
+	         public void actionPerformed(ActionEvent e) {
+			cmdexec.duozhunze();	
+				}
+			});
 		
 		statsBand.addCommandButton(pythonButton2, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(pythonButton3, RibbonElementPriority.TOP);
-
+		statsBand.addCommandButton(pythonButton33, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(pythonButton4, RibbonElementPriority.TOP);
+		
+		
 		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
 		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
 				.getControlPanel()));
@@ -726,7 +977,77 @@ public class BasicRibbon extends JRibbonFrame {
 		return statsBand;
 	}	
 
-	
+	//决策查询
+		protected JRibbonBand getJcfindBand(){
+			ResizableIcon jc_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_sub.png");
+			JRibbonBand jcBandfind = new JRibbonBand("查询", jc_icon,
+					new ExpandActionListener());
+			jcBandfind.setExpandButtonKeyTip("FO");
+			RichTooltip expandRichTooltip = new RichTooltip();
+			expandRichTooltip.setTitle(resourceBundle
+					.getString("Clipboard.textBandTitle"));
+			expandRichTooltip.addDescriptionSection(resourceBundle
+					.getString("Clipboard.textBandTooltipParagraph1"));
+			jcBandfind.setExpandButtonRichTooltip(expandRichTooltip);
+			jcBandfind.setCollapsedStateKeyTip("ZC");
+			
+			// 决策树查询
+			ResizableIcon jcTreeFind_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_lecfind.png");
+			JCommandButton jcTreeFindButton = new JCommandButton("决策树(1)查询", jcTreeFind_icon);
+			
+			jcTreeFindButton.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent e) {
+					cmdexec.execJcTreeFind();	
+				}
+			});
+			
+			// 决策树2查询
+			ResizableIcon jcTreeFind_icon2=ImageTask.getResizableIconFromResource("/img/icons/risk_lecfind.png");
+			JCommandButton jcTreeFindButton2 = new JCommandButton("决策树(2)查询", jcTreeFind_icon2);
+			
+			jcTreeFindButton2.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent e) {
+					cmdexec.execJcTreeFind2();	
+				}
+			});
+			
+			
+			//马尔科夫查询
+			ResizableIcon markovFind_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_lecfind.png");
+			JCommandButton markovFindButton = new JCommandButton("马尔科夫查询", markovFind_icon);
+			markovFindButton.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent e) {
+					cmdexec.execMarkovFind();	
+				}
+			});
+			ResizableIcon py_icon5=ImageTask.getResizableIconFromResource("/img/icons/duozhunzechaxun.png");
+			JCommandButton pythonButton5 = new JCommandButton("多准则查询", py_icon5);
+			pythonButton5.addActionListener(new ActionListener() {
+				@Override
+		         public void actionPerformed(ActionEvent e) {
+				cmdexec.duozhunzechaxun();	
+					}
+				});
+			
+			jcBandfind.addCommandButton(markovFindButton, RibbonElementPriority.TOP);
+			jcBandfind.addCommandButton(jcTreeFindButton, RibbonElementPriority.TOP);
+			jcBandfind.addCommandButton(jcTreeFindButton2, RibbonElementPriority.TOP);
+			
+			jcBandfind.addCommandButton(pythonButton5, RibbonElementPriority.TOP);
+			List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
+			resizePolicies.add(new CoreRibbonResizePolicies.Mirror(jcBandfind
+					.getControlPanel()));
+			resizePolicies.add(new CoreRibbonResizePolicies.Mid2Low(jcBandfind
+					.getControlPanel()));
+			jcBandfind.setResizePolicies(resizePolicies);
+			
+			return jcBandfind;
+			
+		}
+		/////////////////
 	protected JRibbonBand getRiskBand() {
 		ResizableIcon risk_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_sub.png");
 		JRibbonBand riskBand = new JRibbonBand("请选择子模块", risk_icon,
@@ -741,10 +1062,23 @@ public class BasicRibbon extends JRibbonFrame {
 		riskBand.setCollapsedStateKeyTip("ZC");
 
 		ResizableIcon lec_icon=ImageTask.getResizableIconFromResource("/img/icons/lec.png");
-		JCommandButton lecButton = new JCommandButton("LEC法", lec_icon);
+JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
+		
+		// added by shenhui 添加LEC actionlistener, 2016-04-09
+		lecButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execriskcontrolLec();	
+			}
+		});
 		ResizableIcon riskMat_icon=ImageTask.getResizableIconFromResource("/img/icons/riskMat.png");
 		JCommandButton riskMatButton = new JCommandButton("风险矩阵法", riskMat_icon);
-		
+		riskMatButton.addActionListener(new ActionListener() {
+			@Override
+         public void actionPerformed(ActionEvent e) {
+		cmdexec.execriskmatrix();	
+			}
+		});
 		riskBand.addCommandButton(lecButton, RibbonElementPriority.TOP);
 		riskBand.addCommandButton(riskMatButton, RibbonElementPriority.TOP);
 
@@ -757,7 +1091,56 @@ public class BasicRibbon extends JRibbonFrame {
 
 		return riskBand;
 	}	
-	
+	//added by shenhui 风险查询按钮及功能，2016-04-11
+		protected JRibbonBand getRiskfindBand(){
+			ResizableIcon lec_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_sub.png");
+			JRibbonBand riskBandfind = new JRibbonBand("查询", lec_icon,
+					new ExpandActionListener());
+			riskBandfind.setExpandButtonKeyTip("FO");
+			RichTooltip expandRichTooltip = new RichTooltip();
+			expandRichTooltip.setTitle(resourceBundle
+					.getString("Clipboard.textBandTitle"));
+			expandRichTooltip.addDescriptionSection(resourceBundle
+					.getString("Clipboard.textBandTooltipParagraph1"));
+			riskBandfind.setExpandButtonRichTooltip(expandRichTooltip);
+			riskBandfind.setCollapsedStateKeyTip("ZC");
+			
+			// LEC查询
+			ResizableIcon riskLecFind_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_lecfind.png");
+			JCommandButton riskLecFindButton = new JCommandButton("LEC查询", riskLecFind_icon);
+			
+			riskLecFindButton.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent e) {
+					cmdexec.execriskLecFind();	
+				}
+			});
+			
+			
+			
+			//风险矩阵查询
+			ResizableIcon riskMatFind_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_lecfind.png");
+			JCommandButton riskMatFindButton = new JCommandButton("风险矩阵查询", riskMatFind_icon);
+			riskMatFindButton.addActionListener(new ActionListener() {
+				@Override
+	            public void actionPerformed(ActionEvent e) {
+					cmdexec.execriskmatrixFind();	
+				}
+			});
+			
+			riskBandfind.addCommandButton(riskLecFindButton, RibbonElementPriority.TOP);
+			riskBandfind.addCommandButton(riskMatFindButton, RibbonElementPriority.TOP);
+		
+			List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
+			resizePolicies.add(new CoreRibbonResizePolicies.Mirror(riskBandfind
+					.getControlPanel()));
+			resizePolicies.add(new CoreRibbonResizePolicies.Mid2Low(riskBandfind
+					.getControlPanel()));
+			riskBandfind.setResizePolicies(resizePolicies);
+			
+			return riskBandfind;
+			
+		}
 
 	protected RibbonContextualTaskGroup group1;
 	protected RibbonContextualTaskGroup group2;
@@ -768,6 +1151,16 @@ public class BasicRibbon extends JRibbonFrame {
 
 	public BasicRibbon() {
 		super();
+		setting = new SettingUI();
+		statInFra=null;
+		me=this;
+		Properties props = System.getProperties();
+    	props.setProperty("nativeswing.webbrowser.xulrunner.home",
+    			MyPath.getPath()+File.separator+
+    			"libs"+File.separator+"xulrunner31");
+    	//System.out.println();
+    	//NativeInterface.open();
+		//webBrowser = new JWebBrowser(JWebBrowser.useXULRunnerRuntime());
 		maindesktop=new mainDesk(this);
 		setApplicationIcon(new applications_internet());
 		currLocale = Locale.getDefault();        
@@ -783,25 +1176,30 @@ public class BasicRibbon extends JRibbonFrame {
 
 	public void configureRibbon() {
 		
-		JRibbonBand riskBand = this.getRiskBand();
+		
 		JRibbonBand anaBand = this.getAnaBand();
 		JRibbonBand judgeBand = this.getJudgeBand();
+		JRibbonBand judgeBandRun = this.getJudgeRunBand();
 		JRibbonBand jcBand = this.getJcBand();
 		JRibbonBand gameBand = this.getGameBand();
 		RibbonTask anaTask = new RibbonTask("战略分析", anaBand);
+		JRibbonBand riskBand = this.getRiskBand();
+		//RibbonTask riskTask = new RibbonTask("战略风险管控", riskBand);
+		//RibbonTask jcTask = new RibbonTask("战略决策", jcBand);
+		JRibbonBand jcBandFind = this.getJcfindBand();
+		RibbonTask jcTask = new RibbonTask("战略决策", jcBand,jcBandFind);
 		
-		RibbonTask riskTask = new RibbonTask("战略风险管控", riskBand);
-		RibbonTask jcTask = new RibbonTask("战略决策", jcBand);
-		RibbonTask judgeTask = new RibbonTask("战略评价", judgeBand);
+		RibbonTask judgeTask = new RibbonTask("战略评价", judgeBand,judgeBandRun);
 		RibbonTask gameTask = new RibbonTask("战略博弈", gameBand);
 		
-		
+		JRibbonBand riskBandFind = this.getRiskfindBand(); //added by shenhui,增加风险查询，2016-04-11
+		riskTask = new RibbonTask("战略风险管控", riskBand,riskBandFind);
 		JRibbonBand statsBand = this.getStatsBand();
 		JRibbonBand statsBandRun = this.getStatsRunBand();
 		JRibbonBand statsBandDoc = this.getDocumentBand();
 		JRibbonBand statsBandFind = this.getFindBand();
 		JRibbonBand statsBandClip =this.getClipboardBand();
-		statsTask = new RibbonTask("战略统计分析", statsBand,statsBandDoc,statsBandClip,statsBandFind,statsBandRun);
+		statsTask = new RibbonTask("战略统计分析", statsBand,statsBandDoc,statsBandRun);
 		
 		LinkedList taskList=new LinkedList();
 		taskList.add(anaTask);
@@ -810,7 +1208,7 @@ public class BasicRibbon extends JRibbonFrame {
 		taskList.add(judgeTask);
 		taskList.add(riskTask);
 		taskList.add(statsTask);
-		ImageTask task=new ImageTask(messagesRes,this.getRibbon(),taskList);
+		ImageTask task=new ImageTask(messagesRes,this.getRibbon(),taskList,cmdexec);
 		this.getRibbon().addTask(task);
 		
 		this.getRibbon().addTask(anaTask);
@@ -825,11 +1223,14 @@ public class BasicRibbon extends JRibbonFrame {
 				new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						JOptionPane.showMessageDialog(BasicRibbon.this,
-								"Help button clicked");
+						if(mainPane.getDividerLocation()>10)
+							mainPane.setDividerLocation(0);
+						else
+							mainPane.setDividerLocation(300);
 					}
 				});
-        this.getRibbon().setHelpRichTooltip(new RichTooltip("Don't Get Excited", "This isn't the help documentation you are looking for."));
+        this.getRibbon().setHelpRichTooltip(new RichTooltip("上下文帮助",
+        		"程序左侧会提示与现行内容相关的信息"));
 
 		group1 = new RibbonContextualTaskGroup(resourceBundle
 				.getString("Group1.textTaskGroupTitle"), Color.red,
@@ -846,45 +1247,35 @@ public class BasicRibbon extends JRibbonFrame {
 		this.getRibbon().addContextualTaskGroup(group1);
 		this.getRibbon().addContextualTaskGroup(group2);
 
-		configureTaskBar();
+		//configureTaskBar();// TODO
 
 		// application menu
-		configureApplicationMenu();
+		configureApplicationMenu(); //TODO
 
-		JPanel controlPanel = new JPanel();
-		controlPanel.setBorder(new EmptyBorder(20, 0, 0, 5));
-		controlPanel.setBackground(new java.awt.Color(225, 225, 225));
-		FormLayout lm = new FormLayout("right:pref, 4dlu, fill:pref:grow", "");
-		DefaultFormBuilder builder = new DefaultFormBuilder(lm, controlPanel);		
-		this.configureControlPanel(builder);
+//		JPanel controlPanel = new JPanel();
+//		controlPanel.setBorder(new EmptyBorder(20, 0, 0, 5));
+//		controlPanel.setBackground(new java.awt.Color(225, 225, 225));
+//		FormLayout lm = new FormLayout("right:pref, 4dlu, fill:pref:grow", "");
+//		DefaultFormBuilder builder = new DefaultFormBuilder(lm, controlPanel);		
+//		this.configureControlPanel(builder);
 		
-		JPanel leftPanel = new JPanel(new SpringLayout());
+		JPanel leftPanel = new JPanel(new BorderLayout());
 		
-		final JFXPanel jfxPanel = new JFXPanel();
+//		final JFXPanel jfxPanel = new JFXPanel();
+/*
+		webBrowser.setMenuBarVisible(false);
+        webBrowser.setLocationBarVisible(false);
+		webBrowser.navigate(System.getProperty("user.dir")+File.separator+"doc"
+				+File.separator+"templet.html");*/
 		
-		builder.append(jfxPanel);
-		Platform.runLater(() -> {
-		    WebView webView = new WebView();
-		    //int width = getParent().getWidth();
-            //int height = getParent().getHeight();
+		sSwingBrowser=new SimpleSwingBrowser("file:///"+MyPath.getPath()+File.separator+"doc"
+				+File.separator+"templet.html","Help");
+		//builder.append(webBrowser);
 
-            webView.setMinSize(300, 800);
-            webView.setPrefSize(300, 1200);
-            
-            webView.getEngine().load(ImageTask.class.getResource("/doc/3.htm").toExternalForm());
-		    Scene wwwscene=new Scene(webView);
-		    jfxPanel.setScene(wwwscene);		    
-		    Platform.setImplicitExit(false);
-		    
-		});
+		//leftPanel.add(new Label("Help:"),BorderLayout.PAGE_START);
+		leftPanel.add(sSwingBrowser, BorderLayout.CENTER);
+		//leftPanel.add(controlPanel);
 		
-		leftPanel.add(new Label("Help:"));
-		leftPanel.add(jfxPanel);
-		leftPanel.add(controlPanel);
-		SpringUtilities.makeCompactGrid(leftPanel, //parent
-                3, 1,
-                3, 3,  //initX, initY
-                3, 3); //xPad, yPad
 		centerPanel = new JPanel();
         centerPanel.setLayout(new BorderLayout());
         
@@ -894,7 +1285,7 @@ public class BasicRibbon extends JRibbonFrame {
 		mainPane.setContinuousLayout(true);
 		mainPane.setRightComponent(centerPanel);
 		mainPane.setResizeWeight(1);
-		mainPane.setDividerLocation(300);
+		mainPane.setDividerLocation(0);
 		mainPane.setDividerSize(6);
 		this.add(mainPane, BorderLayout.CENTER);
 		validate();
@@ -1041,160 +1432,6 @@ public class BasicRibbon extends JRibbonFrame {
 		amEntrySaveAs.setActionKeyTip("A");
 		amEntrySaveAs.setPopupKeyTip("F");
 
-		RibbonApplicationMenuEntrySecondary amEntrySaveAsWord = new RibbonApplicationMenuEntrySecondary(
-				new x_office_document(), resourceBundle
-						.getString("AppMenuSaveAs.word.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntrySaveAsWord.setDescriptionText(resourceBundle
-				.getString("AppMenuSaveAs.word.description"));
-		amEntrySaveAsWord.setActionKeyTip("W");
-		RibbonApplicationMenuEntrySecondary amEntrySaveAsHtml = new RibbonApplicationMenuEntrySecondary(
-				new text_html(), resourceBundle
-						.getString("AppMenuSaveAs.html.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntrySaveAsHtml.setDescriptionText(resourceBundle
-				.getString("AppMenuSaveAs.html.description"));
-		amEntrySaveAsHtml.setEnabled(false);
-		amEntrySaveAsHtml.setActionKeyTip("H");
-		RibbonApplicationMenuEntrySecondary amEntrySaveAsOtherFormats = new RibbonApplicationMenuEntrySecondary(
-				new document_save_as(), resourceBundle
-						.getString("AppMenuSaveAs.other.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntrySaveAsOtherFormats.setDescriptionText(resourceBundle
-				.getString("AppMenuSaveAs.other.description"));
-		amEntrySaveAsOtherFormats.setActionKeyTip("O");
-
-		amEntrySaveAs
-				.addSecondaryMenuGroup(resourceBundle
-						.getString("AppMenuSaveAs.secondary.textGroupTitle1"),
-						amEntrySaveAsWord, amEntrySaveAsHtml,
-						amEntrySaveAsOtherFormats);
-
-		RibbonApplicationMenuEntryPrimary amEntryPrint = new RibbonApplicationMenuEntryPrimary(
-				new document_print(), resourceBundle
-						.getString("AppMenuPrint.text"), new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						System.out.println("Invoked printing document");
-					}
-				}, CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION);
-		amEntryPrint.setActionKeyTip("P");
-		amEntryPrint.setPopupKeyTip("W");
-
-		RibbonApplicationMenuEntrySecondary amEntryPrintSelect = new RibbonApplicationMenuEntrySecondary(
-				new printer(), resourceBundle
-						.getString("AppMenuPrint.print.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntryPrintSelect.setDescriptionText(resourceBundle
-				.getString("AppMenuPrint.print.description"));
-		amEntryPrintSelect.setActionKeyTip("P");
-		RibbonApplicationMenuEntrySecondary amEntryPrintDefault = new RibbonApplicationMenuEntrySecondary(
-				new document_print(), resourceBundle
-						.getString("AppMenuPrint.quick.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntryPrintDefault.setDescriptionText(resourceBundle
-				.getString("AppMenuPrint.quick.description"));
-		amEntryPrintDefault.setActionKeyTip("Q");
-		RibbonApplicationMenuEntrySecondary amEntryPrintPreview = new RibbonApplicationMenuEntrySecondary(
-				new document_print_preview(), resourceBundle
-						.getString("AppMenuPrint.preview.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntryPrintPreview.setDescriptionText(resourceBundle
-				.getString("AppMenuPrint.preview.description"));
-		amEntryPrintPreview.setActionKeyTip("V");
-
-		amEntryPrint.addSecondaryMenuGroup(resourceBundle
-				.getString("AppMenuPrint.secondary.textGroupTitle1"),
-				amEntryPrintSelect, amEntryPrintDefault, amEntryPrintPreview);
-
-		RibbonApplicationMenuEntrySecondary amEntryPrintMemo = new RibbonApplicationMenuEntrySecondary(
-				new text_x_generic(), resourceBundle
-						.getString("AppMenuPrint.memo.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntryPrintMemo.setActionKeyTip("M");
-
-		amEntryPrint.addSecondaryMenuGroup(resourceBundle
-				.getString("AppMenuPrint.secondary.textGroupTitle2"),
-				amEntryPrintMemo);
-
-		RibbonApplicationMenuEntryPrimary amEntrySend = new RibbonApplicationMenuEntryPrimary(
-				new mail_forward(), resourceBundle
-						.getString("AppMenuSend.text"), new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						System.out.println("Invoked sending document");
-					}
-				}, CommandButtonKind.POPUP_ONLY);
-		amEntrySend.setPopupKeyTip("D");
-
-		RibbonApplicationMenuEntrySecondary amEntrySendMail = new RibbonApplicationMenuEntrySecondary(
-				new mail_message_new(), resourceBundle
-						.getString("AppMenuSend.email.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntrySendMail.setDescriptionText(resourceBundle
-				.getString("AppMenuSend.email.description"));
-		amEntrySendMail.setActionKeyTip("E");
-		RibbonApplicationMenuEntrySecondary amEntrySendHtml = new RibbonApplicationMenuEntrySecondary(
-				new text_html(), resourceBundle
-						.getString("AppMenuSend.html.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntrySendHtml.setDescriptionText(resourceBundle
-				.getString("AppMenuSend.html.description"));
-		amEntrySendHtml.setActionKeyTip("H");
-		RibbonApplicationMenuEntrySecondary amEntrySendDoc = new RibbonApplicationMenuEntrySecondary(
-				new x_office_document(), resourceBundle
-						.getString("AppMenuSend.word.text"), null,
-				CommandButtonKind.ACTION_ONLY);
-		amEntrySendDoc.setDescriptionText(resourceBundle
-				.getString("AppMenuSend.word.description"));
-		amEntrySendDoc.setActionKeyTip("W");
-		RibbonApplicationMenuEntrySecondary amEntrySendWireless = new RibbonApplicationMenuEntrySecondary(
-				new network_wireless(), resourceBundle
-						.getString("AppMenuSend.wireless.text"), null,
-				CommandButtonKind.POPUP_ONLY);
-		amEntrySendWireless.setPopupKeyTip("X");
-
-		amEntrySendWireless.setPopupCallback(new PopupPanelCallback() {
-			@Override
-			public JPopupPanel getPopupPanel(JCommandButton commandButton) {
-				JCommandPopupMenu wirelessChoices = new JCommandPopupMenu();
-
-				JCommandMenuButton wiFiMenuButton = new JCommandMenuButton(
-						resourceBundle
-								.getString("AppMenuSend.wireless.wifi.text"),
-						new EmptyResizableIcon(16));
-				wiFiMenuButton.setActionKeyTip("W");
-				wiFiMenuButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						System.out.println("WiFi activated");
-					}
-				});
-				wirelessChoices.addMenuButton(wiFiMenuButton);
-
-				JCommandMenuButton blueToothMenuButton = new JCommandMenuButton(
-						resourceBundle
-								.getString("AppMenuSend.wireless.bluetooth.text"),
-						new EmptyResizableIcon(16));
-				blueToothMenuButton.setActionKeyTip("B");
-				blueToothMenuButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						System.out.println("BlueTooth activated");
-					}
-				});
-				wirelessChoices.addMenuButton(blueToothMenuButton);
-				return wirelessChoices;
-			}
-		});
-
-		amEntrySendWireless.setDescriptionText(resourceBundle
-				.getString("AppMenuSend.wireless.description"));
-
-		amEntrySend.addSecondaryMenuGroup(resourceBundle
-				.getString("AppMenuSend.secondary.textGroupTitle1"),
-				amEntrySendMail, amEntrySendHtml, amEntrySendDoc,
-				amEntrySendWireless);
 
 		RibbonApplicationMenuEntryPrimary amEntryExit = new RibbonApplicationMenuEntryPrimary(
 				new system_log_out(), resourceBundle
@@ -1206,18 +1443,31 @@ public class BasicRibbon extends JRibbonFrame {
 				}, CommandButtonKind.ACTION_ONLY);
 		amEntryExit.setActionKeyTip("X");
 
+		RibbonApplicationMenuEntryPrimary amEntryHelp =
+				new RibbonApplicationMenuEntryPrimary(
+				new text_x_generic(), "上下文帮助开关", new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if(mainPane.getDividerLocation()>10)
+							mainPane.setDividerLocation(0);
+						else
+							mainPane.setDividerLocation(300);
+					}
+				}, CommandButtonKind.ACTION_ONLY);
+		amEntryExit.setActionKeyTip("F1");
+		
 		RibbonApplicationMenu applicationMenu = new RibbonApplicationMenu();
-		applicationMenu.addMenuEntry(amEntryNew);
-		applicationMenu.addMenuEntry(amEntryOpen);
-		applicationMenu.addMenuEntry(amEntrySave);
-		applicationMenu.addMenuEntry(amEntrySaveAs);
-		applicationMenu.addMenuSeparator();
-		applicationMenu.addMenuEntry(amEntryPrint);
-		applicationMenu.addMenuEntry(amEntrySend);
-		applicationMenu.addMenuSeparator();
-		applicationMenu.addMenuEntry(amEntryExit);
-
-		applicationMenu
+		//applicationMenu.addMenuEntry(amEntryNew);
+		//applicationMenu.addMenuEntry(amEntryOpen);
+		//applicationMenu.addMenuEntry(amEntrySave);
+		//applicationMenu.addMenuEntry(amEntrySaveAs);
+		//applicationMenu.addMenuSeparator();
+		//applicationMenu.addMenuEntry(amEntryPrint);
+		//applicationMenu.addMenuEntry(amEntrySend);
+		//applicationMenu.addMenuSeparator();
+		//applicationMenu.addMenuEntry(amEntryExit);
+		applicationMenu.addMenuEntry(amEntryHelp);
+		/*applicationMenu
 				.setDefaultCallback(new RibbonApplicationMenuEntryPrimary.PrimaryRolloverCallback() {
 					@Override
 					public void menuEntryActivated(JPanel targetPanel) {
@@ -1242,36 +1492,54 @@ public class BasicRibbon extends JRibbonFrame {
 						}
 						openHistoryPanel.setMaxButtonColumns(1);
 						targetPanel.setLayout(new BorderLayout());
-						targetPanel.add(openHistoryPanel, BorderLayout.CENTER);
+						//targetPanel.add(openHistoryPanel, BorderLayout.CENTER);
 					}
 				});
-
-		RibbonApplicationMenuEntryFooter amFooterProps = new RibbonApplicationMenuEntryFooter(
-				new document_properties(), resourceBundle
-						.getString("AppMenuOptions.text"),
+		 */
+		RibbonApplicationMenuEntryPrimary amFooterProps = new RibbonApplicationMenuEntryPrimary(
+				new document_properties(), "参数设置",
 				new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						System.out.println("Invoked Options");
+						final Toolkit toolkit = Toolkit.getDefaultToolkit();
+						final Dimension screenSize = toolkit.getScreenSize();
+						final int x = (screenSize.width - setting.getWidth()) / 2;
+						final int y = (screenSize.height - setting.getHeight()) / 2;
+						setting.setLocation(x, y);
+						setting.setVisible(true);
 					}
-				});
-		RibbonApplicationMenuEntryFooter amFooterExit = new RibbonApplicationMenuEntryFooter(
-				new system_log_out(), resourceBundle
-						.getString("AppMenuExit.text"), new ActionListener() {
+				}, CommandButtonKind.ACTION_ONLY);
+		RibbonApplicationMenuEntryPrimary amWinProps = new RibbonApplicationMenuEntryPrimary(
+				new document_properties(), "窗口列表",
+				new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						inFrameManger=new mangeFrames(me);
+						final Toolkit toolkit = Toolkit.getDefaultToolkit();
+						final Dimension screenSize = toolkit.getScreenSize();
+						final int x = (screenSize.width - setting.getWidth()) / 2;
+						final int y = (screenSize.height - setting.getHeight()) / 2;
+						inFrameManger.setLocation(x, y);
+						inFrameManger.setVisible(true);
+					}
+				}, CommandButtonKind.ACTION_ONLY);
+		RibbonApplicationMenuEntryPrimary amFooterExit = new RibbonApplicationMenuEntryPrimary(
+				new system_log_out(), "退出", new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						System.exit(0);
 					}
-				});
-		amFooterExit.setEnabled(true);
-		applicationMenu.addFooterEntry(amFooterProps);
-		applicationMenu.addFooterEntry(amFooterExit);
-
+				}, CommandButtonKind.ACTION_ONLY);
+		//amFooterExit.setEnabled(true);
+		//applicationMenu.addFooterEntry(amFooterProps);
+		//applicationMenu.addFooterEntry(amFooterExit);
+		applicationMenu.addMenuEntry(amFooterProps);
+		applicationMenu.addMenuEntry(amWinProps);
+		applicationMenu.addMenuEntry(amFooterExit);
 		this.getRibbon().setApplicationMenu(applicationMenu);
 
 		RichTooltip appMenuRichTooltip = new RichTooltip();
-		appMenuRichTooltip.setTitle(resourceBundle
-				.getString("AppMenu.tooltip.title"));
+		appMenuRichTooltip.setTitle(resourceBundle.getString("AppMenu.tooltip.title"));
 		appMenuRichTooltip.addDescriptionSection(resourceBundle
 				.getString("AppMenu.tooltip.paragraph1"));
 		try {
@@ -1321,44 +1589,7 @@ public class BasicRibbon extends JRibbonFrame {
 
 		return transitionBand;
 	}
-	protected void configureControlPanel(DefaultFormBuilder builder) {
-		
 
-		final JCheckBox group1Visible = new JCheckBox("visible");
-		final JCheckBox group2Visible = new JCheckBox("visible");
-		group1Visible.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						getRibbon().setVisible(group1,
-								group1Visible.isSelected());
-					}
-				});
-			}
-		});
-		group2Visible.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						getRibbon().setVisible(group2,
-								group2Visible.isSelected());
-					}
-				});
-			}
-		});
-		builder.append("Group 1", group1Visible);
-		builder.append("Group 2", group2Visible);
-
-		builder.append("Look & feel", LookAndFeelSwitcher
-				.getLookAndFeelSwitcher(this));
-		JButton changeParagraph = new JButton("change");
-
-		builder.append("Change 'Paragraph'", changeParagraph);
-	}
 
 	protected JFlowRibbonBand getFontBand() {
 		JFlowRibbonBand fontBand = new JFlowRibbonBand(resourceBundle
@@ -1528,15 +1759,47 @@ public class BasicRibbon extends JRibbonFrame {
 				"com.pagosoft.plaf.PgsLookAndFeel");
 		UIManager.installLookAndFeel("Squareness",
 				"net.beeger.squareness.SquarenessLookAndFeel");
+		final Object lock = new Object();
+				
+		try {
+			EventQueue.invokeAndWait(new Runnable()
+			{
+			    @Override
+			    public void run()
+			    {
+			        // display splash screen
+			    	splashScreen = new SplashScreenFrame(lock);            	
+			        splashScreen.startInit();
+			        
+			    }
+			});
+		} catch (InvocationTargetException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		
 		System.out.println(new File(BasicRibbon.class.getResource("/").getFile())  
 		        .getAbsolutePath());
-		try {
-			UIManager.setLookAndFeel(new MetalLookAndFeel());
-		} catch (Exception ignored) {
-		}
+		
+		 synchronized(lock){
+             {
+			 try {
+				 	
+					UIManager.setLookAndFeel(new MetalLookAndFeel());
+				} catch (Exception ignored) {
+				}
+             
+             }
+         }
+		 
+		 
+		 
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
             public void run() {
@@ -1546,12 +1809,35 @@ public class BasicRibbon extends JRibbonFrame {
 						.getOrientation(Locale.getDefault()));
 				Rectangle r = GraphicsEnvironment.getLocalGraphicsEnvironment()
 						.getMaximumWindowBounds();
-				c.setPreferredSize(new Dimension(r.width, r.height / 2));
+				c.setPreferredSize(new Dimension(r.width, r.height ));
 				c.setMinimumSize(new Dimension(r.width / 10, r.height / 2));
 				c.pack();
 				c.setLocation(r.x, r.y);
+				try {
+					
+				}
+				catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				if (splashScreen != null)
+		        {
+		            // then do less important stuff later
+		            ThreadUtil.invokeLater(new Runnable()
+		            {
+		                @Override
+		                public void run()
+		                {
+		                    // we can now hide splash as we have interface
+		                    splashScreen.dispose();
+		                    splashScreen = null;
+		                }
+		            });
+		        }
+				
 				c.setVisible(true);
-				c.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				c.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 				c.addComponentListener(new ComponentAdapter() {
 				@Override
@@ -1580,7 +1866,7 @@ public class BasicRibbon extends JRibbonFrame {
 		statusBar = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
 		JLabel helper = new JLabel("Right click to show menu");
-		statusBar.add(helper);
+		//statusBar.add(helper);
 
 		JCommandButtonStrip alignStrip = new JCommandButtonStrip();
 		CommandToggleButtonGroup alignGroup = new CommandToggleButtonGroup();
@@ -1606,9 +1892,10 @@ public class BasicRibbon extends JRibbonFrame {
 		alignGroup.add(alignFillButton);
 		alignStrip.add(alignFillButton);
 
-		statusBar.add(alignStrip);
+		//statusBar.add(alignStrip);
 
 		final Map<Integer, Boolean> selection = new TreeMap<Integer, Boolean>();
+		/*
 		statusBar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -1680,7 +1967,7 @@ public class BasicRibbon extends JRibbonFrame {
 				PopupPanelManager.defaultManager().addPopupListener(tracker);
 			}
 		});
-
+*/
 		this.add(statusBar, BorderLayout.SOUTH);
 	}
 

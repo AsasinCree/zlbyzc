@@ -37,6 +37,7 @@ import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
 
@@ -58,12 +59,14 @@ import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import org.pushingpixels.substance.api.SubstanceConstants.SubstanceWidgetType;
 import zlbyzc.gui.ChallengerLessDeepSkin;
 
+import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 import org.pushingpixels.substance.api.skin.OfficeBlack2007Skin;
 import org.pushingpixels.substance.flamingo.ribbon.gallery.oob.SubstanceRibbonTask;
 import org.pushingpixels.substance.internal.utils.SubstanceWidgetManager;
 
 import zlbyzc.LookAndFeelSwitcher;
 import zlbyzc.gui.ImageTask;
+import zlbyzc.gui.SplashScreenFrame;
 import zlbyzc.gui.TitlePane;
 
 //import test.common.IconWrapperResizableIcon;
@@ -84,7 +87,7 @@ public class guiSubstanceRibbon extends BasicRibbon {
         super();
         
         //this.setTitle(messagesRes.getString("guiTitle"));
-        TitlePane.editTitleBar(this, messagesRes.getString("guiTitle"));
+        //TitlePane.editTitleBar(this, messagesRes.getString("guiTitle"));
     }
 
 	@Override
@@ -108,8 +111,8 @@ public class guiSubstanceRibbon extends BasicRibbon {
             }
         });
         getRibbon().addHelpPanelComponent(toggleButton);
-
-
+        //LookAndFeelSwitcher.setLookAndFeel("JGoodies PlasticXP", this);
+        //LookAndFeelSwitcher.setFont();
 	}
 
 	@Override
@@ -119,23 +122,7 @@ public class guiSubstanceRibbon extends BasicRibbon {
 				DecorationAreaType.FOOTER);
 	}
 
-	@Override
-	protected void configureControlPanel(DefaultFormBuilder formBuilder) {
-		super.configureControlPanel(formBuilder);
-		final JCheckBox heapPanel = new JCheckBox("show");
-		heapPanel.setSelected(false);
-		heapPanel.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				SubstanceLookAndFeel.setWidgetVisible(getRootPane(), heapPanel
-						.isSelected(),
-						SubstanceWidgetType.TITLE_PANE_HEAP_STATUS);
-			}
-		});
-		formBuilder.append("Heap panel", heapPanel);
 	
-		
-	}
 	/**
 	 * 统一设置字体，父界面设置之后，所有由父界面进入的子界面都不需要再次设置字体
 	 */
@@ -152,28 +139,6 @@ public class guiSubstanceRibbon extends BasicRibbon {
 		}
 	}
 	public static void main(String[] args) {
-//		for (Window w : Window.getWindows()) {
-//			String wTitle = null;
-//			JRootPane rootPane = null;
-//			if (w instanceof Frame) {
-//				wTitle = ((Frame) w).getTitle();
-//			}
-//			if (w instanceof Dialog) {
-//				wTitle = ((Dialog) w).getTitle();
-//			}
-//			if (w instanceof JFrame) {
-//				rootPane = ((JFrame) w).getRootPane();
-//			}
-//			if (w instanceof JDialog) {
-//				rootPane = ((JDialog) w).getRootPane();
-//			}
-//			System.out.println("Window '" + wTitle + "' of "
-//					+ w.getClass().getName());
-//			if (rootPane != null) {
-//				System.out.println("\troot pane UI:"
-//						+ rootPane.getUI().getClass().getName());
-//			}
-//		}
 		
 		UIManager.installLookAndFeel("JGoodies Plastic",
 				"com.jgoodies.looks.plastic.PlasticLookAndFeel");
@@ -193,19 +158,43 @@ public class guiSubstanceRibbon extends BasicRibbon {
 		UIManager.installLookAndFeel("Squareness",
 				"net.beeger.squareness.SquarenessLookAndFeel");
 
+		final Object lock = new Object();				
+		try {
+			EventQueue.invokeAndWait(new Runnable()
+			{
+			    @Override
+			    public void run()
+			    {
+			        // display splash screen
+			    	splashScreen = new SplashScreenFrame(lock);            	
+			        splashScreen.startInit();
+			        
+			    }
+			});
+		} catch (InvocationTargetException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		try {
-			UIManager.setLookAndFeel(new MetalLookAndFeel());
-		} catch (Exception ignored) {
-		}
+		synchronized(lock){            
+			 try {
+				 	//lock.wait();
+					UIManager.setLookAndFeel(new MetalLookAndFeel());
+				} catch (Exception ignored) {
+				}
+        }
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
             public void run() {
 				
-				SubstanceLookAndFeel.setSkin(new ChallengerLessDeepSkin());
+				SubstanceLookAndFeel.setSkin(new BusinessBlueSteelSkin());
+				
 				if(zUtil.getOSname()!=zUtil.EPlatform.Windows)
-					InitGlobalFont(new Font("Dialog", Font.PLAIN, 14));
+					InitGlobalFont(new Font("Dialog", Font.PLAIN, 16));
 				guiSubstanceRibbon c = new guiSubstanceRibbon();
 				
 				c.configureRibbon();
@@ -218,10 +207,33 @@ public class guiSubstanceRibbon extends BasicRibbon {
 				c.pack();
 				c.setLocation(r.x, r.y);
 				
+				try {
+					//zlbyzc.sub3.analysis.services.SwotTaskDAO swotTaskDAO = new zlbyzc.sub3.analysis.services.SwotTaskDAO();		
+					//swotTaskDAO.getAllSwotTasks();
+				}
+				catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				if (splashScreen != null)
+		        {
+		            // then do less important stuff later
+		            ThreadUtil.invokeLater(new Runnable()
+		            {
+		                @Override
+		                public void run()
+		                {
+		                    // we can now hide splash as we have interface
+		                    splashScreen.dispose();
+		                    splashScreen = null;
+		                }
+		            });
+		        }
 				
 				
 				c.setVisible(true);
-				c.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				c.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 				c.addComponentListener(new ComponentAdapter() {
 				@Override
@@ -231,6 +243,9 @@ public class guiSubstanceRibbon extends BasicRibbon {
 				});
 
 //				
+				//swotTaskDAO.getSwotTaskByID(1);
+	    				
+			    
 //				c.getRootPane().getInputMap(
 //						JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 //						KeyStroke.getKeyStroke("alt shift E"),
