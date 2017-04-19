@@ -1,0 +1,1 @@
+获得panel等大小的方法，如getSize()一定要在  frame.setVisible(true)之后
