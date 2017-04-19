@@ -7,6 +7,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import zlbyzc.sub3.analysis.entities.ScenarioLogic;
 import zlbyzc.sub3.analysis.entities.ScenarioResult;
 import zlbyzc.sub3.analysis.entities.ScenarioTask;
 import zlbyzc.sub3.analysis.services.interfaces.ScenarioResultDAOInterface;
@@ -133,10 +134,35 @@ public class ScenarioResultDAO implements ScenarioResultDAOInterface {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<ScenarioResult> getAllResults() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ScenarioResult> getAllResults(ScenarioTask scenarioTask) {
+		Session session = null;
+		Transaction transaction = null;
+		List<ScenarioResult> scenarioResultList = null;
+		
+		try{			
+			session = HibernateTool.getSession();
+			transaction = (Transaction) session.beginTransaction();
+			String hqlString = "from ScenarioResult where scenarioTask=:scenarioTask";
+			Query query = session.createQuery(hqlString);
+			query.setParameter("scenarioTask", scenarioTask);
+			scenarioResultList = (List<ScenarioResult>)query.list();
+			
+			transaction.commit();
+			return scenarioResultList;	
+			
+		}catch(Exception e){			
+			e.printStackTrace();	
+			transaction.commit();
+			return scenarioResultList;
+			
+		}finally{			
+			if(transaction != null)
+				transaction =null;
+			if(session != null)
+				HibernateTool.closeSession(session);
+		}
 	}
 
 }

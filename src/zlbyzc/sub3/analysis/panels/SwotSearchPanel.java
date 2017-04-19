@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -33,6 +34,7 @@ import javax.swing.table.TableColumnModel;
 import org.jdatepicker.DatePicker;
 import org.jdatepicker.JDatePicker;
 
+import zlbyzc.sub3.analysis.entities.ScenarioTask;
 import zlbyzc.sub3.analysis.entities.SwotActor;
 import zlbyzc.sub3.analysis.entities.SwotActorProperty;
 import zlbyzc.sub3.analysis.entities.SwotTask;
@@ -52,10 +54,19 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 	
 	private SwotTaskDAOInterface swotTaskDAO;
 	
+	private JSplitPane splitpane;
+	private JPanel panelLeft;
+	private JPanel panelRight;
 	private JPanel panelLayInput;
-	private JPanel panelLayTableANDButton;
+	private JPanel panelLayInputTaskName;
+	private JPanel panelLayInputTaskLocation;
+	private JPanel panelLayInputArgueTimeStartDate;
+	private JPanel panelLayInputArgueTimeEndDate;
+	private JPanel panelLayInputButton;
+	private JPanel panelLayTableANDPageButton;
 	private JPanel panelLayTable;
-	private JPanel panelLayButton;
+	private JPanel panelLayPageButton;
+	private JPanel panelLayEditButton;
 	private JPanel panelLayView;
 	
 	private JLabel labelTaskName;
@@ -69,13 +80,19 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 	private DatePicker datePickerArgueTimeEndDate;
 	
 	private JButton buttonSearch;
+	private JButton buttonPreviousPage;
+	private JButton buttonNextPage;
 	private JButton buttonDeleteSwotTask;
 	private JButton buttonModifySwotTask;
 	
 	private DefaultTableModel dtm;
 	private JTable table;
 	private JScrollPane scrollpaneTable;
+	private List<SwotTask> commonList;
 	private int selectedTableRow;		
+	private int pageCurrent;		//当前页码
+	private int pageSum;	//总页数
+	private int pageDivider;		//每页显示条目数
 	
 	//表格修改任务内容面板
 	private JFrame frameModifyTask;
@@ -84,7 +101,7 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 	private JPanel panelLayTaskDescriptionInModifyTask;
 	private JPanel panelLayArgueTimeInModifyTask;
 	private JPanel panelLayTaskLocationInModifyTask;
-	private JPanel panelLayButtonInModifyTask;
+	private JPanel panelLayPageButtonInModifyTask;
 	private JLabel labelTaskNameInModifyTask;
 	private JLabel labelTaskDescriptionInModifyTask;
 	private JLabel labelArgueTimeInModifyTask;
@@ -116,17 +133,40 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 		//JPanel设置
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		panelLayInput = new JPanel();
-		panelLayTableANDButton = new JPanel();
-		panelLayTable = new JPanel();
-		panelLayButton = new JPanel();
-		panelLayView = new JPanel();
-		panelLayTableANDButton.setMaximumSize(new Dimension(1500, 150));			//【没有更好的办法设置该panel初始高度】
+		splitpane = new JSplitPane();
+		splitpane.setOneTouchExpandable(true);  		//让分隔线显示出箭头
+		splitpane.setContinuousLayout(true); 		//当用户操作分隔线箭头时，系统重绘图形
+		splitpane.setOrientation(JSplitPane.HORIZONTAL_SPLIT); 		//设置方向或者分隔窗格的方式（HORIZONTAL_SPLIT表示左右分隔，VERTICAL_SPLIT）
+		splitpane.setDividerSize(3); 		//设置分隔条的大小
+		splitpane.setDividerLocation(400); 	//设置分隔条的位置【】
 		
-		panelLayInput.setLayout(new BoxLayout(panelLayInput, BoxLayout.X_AXIS));
-		panelLayTableANDButton.setLayout(new BoxLayout(panelLayTableANDButton, BoxLayout.X_AXIS));
+		panelLeft = new JPanel();
+		panelRight = new JPanel();
+		panelLayInput = new JPanel();
+		panelLayInputTaskName = new JPanel();
+		panelLayInputTaskLocation = new JPanel();
+		panelLayInputArgueTimeStartDate = new JPanel();
+		panelLayInputArgueTimeEndDate = new JPanel();
+		panelLayInputButton = new JPanel();
+		panelLayTableANDPageButton = new JPanel();
+		panelLayTable = new JPanel();
+		panelLayPageButton = new JPanel();
+		panelLayEditButton = new JPanel();
+		panelLayView = new JPanel();
+		panelLayTableANDPageButton.setPreferredSize(new Dimension(0, 550));			//【没有更好的办法设置该panel初始高度】
+		
+		panelLeft.setLayout(new BoxLayout(panelLeft, BoxLayout.Y_AXIS));
+		panelRight.setLayout(new BorderLayout());
+		panelLayInput.setLayout(new BoxLayout(panelLayInput, BoxLayout.Y_AXIS));
+		panelLayInputTaskName.setLayout(new BoxLayout(panelLayInputTaskName, BoxLayout.X_AXIS));
+		panelLayInputTaskLocation.setLayout(new BoxLayout(panelLayInputTaskLocation, BoxLayout.X_AXIS));
+		panelLayInputArgueTimeStartDate.setLayout(new BoxLayout(panelLayInputArgueTimeStartDate, BoxLayout.X_AXIS));
+		panelLayInputArgueTimeEndDate.setLayout(new BoxLayout(panelLayInputArgueTimeEndDate, BoxLayout.X_AXIS));
+		panelLayInputButton.setLayout(new BoxLayout(panelLayInputButton, BoxLayout.X_AXIS));
+		panelLayTableANDPageButton.setLayout(new BoxLayout(panelLayTableANDPageButton, BoxLayout.Y_AXIS));
 		panelLayTable.setLayout(new BorderLayout());
-		panelLayButton.setLayout(new BoxLayout(panelLayButton, BoxLayout.Y_AXIS));
+		panelLayPageButton.setLayout(new BoxLayout(panelLayPageButton, BoxLayout.X_AXIS));
+		panelLayEditButton.setLayout(new BoxLayout(panelLayEditButton, BoxLayout.X_AXIS));
 		panelLayView.setLayout(new BorderLayout());
 		
 		labelTaskName = new JLabel("任务名称");
@@ -139,6 +179,7 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 		datePickerArgueTimeStartDate = new JDatePicker();
 		datePickerArgueTimeEndDate = new JDatePicker();
 		
+		//不设置大小会自动拉伸
 		textfieldTaskName.setMinimumSize(new Dimension(100,25));
 		textfieldTaskName.setMaximumSize(new Dimension(150,30));
 		textfieldTaskLocation.setMinimumSize(new Dimension(100,25));
@@ -149,16 +190,22 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 		((Component) datePickerArgueTimeEndDate).setMaximumSize(new Dimension(150,30));
 	
 		buttonSearch = new JButton("查找");	
+		buttonPreviousPage = new JButton("上一页");
+		buttonNextPage = new JButton("下一页");
 		buttonDeleteSwotTask = new JButton("删除");
 		buttonModifySwotTask = new JButton("修改");
+		buttonPreviousPage.setEnabled(false);
+		buttonNextPage.setEnabled(false);
 		buttonSearch.addActionListener(this);
+		buttonPreviousPage.addActionListener(this);
+		buttonNextPage.addActionListener(this);
 		buttonDeleteSwotTask.addActionListener(this);
 		buttonModifySwotTask.addActionListener(this);
 		
 		table = initializeTable();
 		
 		scrollpaneTable = new JScrollPane(table);
-		scrollpaneTable.setPreferredSize(new Dimension(0, 100));
+		scrollpaneTable.setPreferredSize(new Dimension(500, 550));
 		
 		//右键菜单
 		popupMenu = new JPopupMenu(); 
@@ -172,37 +219,55 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 	
 	public void layoutComponent() {
 		
-		panelLayInput.add(labelTaskName);
-		panelLayInput.add(Box.createHorizontalStrut(10));
-		panelLayInput.add(textfieldTaskName);
-		panelLayInput.add(Box.createHorizontalStrut(20));
-		panelLayInput.add(labelTaskLocation);
-		panelLayInput.add(Box.createHorizontalStrut(10));
-		panelLayInput.add(textfieldTaskLocation);
-		panelLayInput.add(Box.createHorizontalStrut(20));
-		panelLayInput.add(labelArgueTimeStartDate);
-		panelLayInput.add(Box.createHorizontalStrut(10));
-		panelLayInput.add((Component) datePickerArgueTimeStartDate);
-		panelLayInput.add(Box.createHorizontalStrut(20));
-		panelLayInput.add(labelArgueTimeEndDate);
-		panelLayInput.add(Box.createHorizontalStrut(10));
-		panelLayInput.add((Component) datePickerArgueTimeEndDate);
-		panelLayInput.add(Box.createHorizontalStrut(20));
-		panelLayInput.add(buttonSearch);
+		panelLayInputTaskName.add(labelTaskName);
+		panelLayInputTaskName.add(Box.createRigidArea(new Dimension(20, 30)));
+		panelLayInputTaskName.add(textfieldTaskName);
+		panelLayInputTaskLocation.add(labelTaskLocation);
+		panelLayInputTaskLocation.add(Box.createRigidArea(new Dimension(20, 30)));
+		panelLayInputTaskLocation.add(textfieldTaskLocation);
+		panelLayInputArgueTimeStartDate.add(labelArgueTimeStartDate);
+		panelLayInputArgueTimeStartDate.add(Box.createRigidArea(new Dimension(20, 30)));
+		panelLayInputArgueTimeStartDate.add((Component) datePickerArgueTimeStartDate);
+		panelLayInputArgueTimeEndDate.add(labelArgueTimeEndDate);
+		panelLayInputArgueTimeEndDate.add(Box.createRigidArea(new Dimension(20, 30)));
+		panelLayInputArgueTimeEndDate.add((Component) datePickerArgueTimeEndDate);
+		panelLayInputButton.add(buttonSearch);
+		
+		panelLayInput.add(Box.createVerticalStrut(5));
+		panelLayInput.add(panelLayInputTaskName);
+		panelLayInput.add(Box.createVerticalStrut(5));
+		panelLayInput.add(panelLayInputTaskLocation);
+		panelLayInput.add(Box.createVerticalStrut(5));
+		panelLayInput.add(panelLayInputArgueTimeStartDate);
+		panelLayInput.add(Box.createVerticalStrut(5));
+		panelLayInput.add(panelLayInputArgueTimeEndDate);
+		panelLayInput.add(Box.createVerticalStrut(2));
+		panelLayInput.add(panelLayInputButton);
+		panelLayInput.add(Box.createVerticalStrut(5));
 		
 		panelLayTable.add(scrollpaneTable);
-		panelLayButton.add(buttonDeleteSwotTask);
-		panelLayButton.add(buttonModifySwotTask);
-		panelLayTableANDButton.add(panelLayTable);
-		panelLayTableANDButton.add(panelLayButton);
+		panelLayPageButton.add(buttonPreviousPage);
+		panelLayPageButton.add(Box.createHorizontalStrut(10));
+		panelLayPageButton.add(buttonNextPage);
+		panelLayTableANDPageButton.add(panelLayTable);
+		panelLayTableANDPageButton.add(panelLayPageButton);
+		
+		panelLayEditButton.add(buttonDeleteSwotTask);
+		panelLayEditButton.add(Box.createHorizontalStrut(10));
+		panelLayEditButton.add(buttonModifySwotTask);
+		
+		panelLeft.add(panelLayInput);
+		panelLeft.add(panelLayTableANDPageButton);
+		panelLeft.add(panelLayEditButton);
+		
+		panelRight.add(panelLayView);
 		
         popupMenu.add(popmenuItemDeleteSwotTask);  
         popupMenu.add(popmenuItemModifySwotTask);  
 		
-		add(panelLayInput);
-		add(panelLayTableANDButton);
-		add(panelLayView);
-		
+		splitpane.setLeftComponent(panelLeft);		
+		splitpane.setRightComponent(panelRight);
+		add(splitpane);
 	}
 	
 	public JTable initializeTable() {
@@ -236,8 +301,8 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 		columnModel.getColumn(0).setMaxWidth(40);
 		columnModel.getColumn(1).setPreferredWidth(250);
 		columnModel.getColumn(1).setMaxWidth(450);
-		columnModel.getColumn(2).setPreferredWidth(700);
-		columnModel.getColumn(2).setMaxWidth(800);
+		columnModel.getColumn(2).setPreferredWidth(250);
+		columnModel.getColumn(2).setMaxWidth(450);
 		columnModel.getColumn(3).setPreferredWidth(150);
 		columnModel.getColumn(3).setMaxWidth(150);
 		columnModel.getColumn(4).setPreferredWidth(100);
@@ -328,13 +393,13 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 		panelLayTaskDescriptionInModifyTask = new JPanel();
 		panelLayArgueTimeInModifyTask = new JPanel();
 		panelLayTaskLocationInModifyTask = new JPanel();
-		panelLayButtonInModifyTask = new JPanel();
+		panelLayPageButtonInModifyTask = new JPanel();
 		
 		panelLayTaskNameInModifyTask.setLayout(new BoxLayout(panelLayTaskNameInModifyTask, BoxLayout.X_AXIS));
 		panelLayTaskDescriptionInModifyTask.setLayout(new BoxLayout(panelLayTaskDescriptionInModifyTask, BoxLayout.X_AXIS));
 		panelLayArgueTimeInModifyTask.setLayout(new BoxLayout(panelLayArgueTimeInModifyTask, BoxLayout.X_AXIS));
 		panelLayTaskLocationInModifyTask.setLayout(new BoxLayout(panelLayTaskLocationInModifyTask, BoxLayout.X_AXIS));
-		panelLayButtonInModifyTask.setLayout(new BoxLayout(panelLayButtonInModifyTask, BoxLayout.X_AXIS));
+		panelLayPageButtonInModifyTask.setLayout(new BoxLayout(panelLayPageButtonInModifyTask, BoxLayout.X_AXIS));
 		
 		labelTaskNameInModifyTask = new JLabel("任务名称");
 		labelTaskDescriptionInModifyTask = new JLabel("任务描述");
@@ -377,7 +442,7 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 			}
 			Calendar cal = Calendar.getInstance();
 		    cal.setTime(date);
-			datePickerArgueTimeInModifyTask.setCustomTextFieldValue(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+			datePickerArgueTimeInModifyTask.setCustomTextFieldValue(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 		}
 		
 		comboBoxTaskLocationInModifyTask.setSelectedItem(table.getModel().getValueAt(selectedTableRow, 4));
@@ -406,9 +471,9 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 		panelLayTaskLocationInModifyTask.add(Box.createRigidArea(new Dimension(20, 60)));  
 		panelLayTaskLocationInModifyTask.add(comboBoxTaskLocationInModifyTask);
 		
-		panelLayButtonInModifyTask.add(buttonConfirmInModifyTask);
-		panelLayButtonInModifyTask.add(Box.createRigidArea(new Dimension(20, 60)));    
-		panelLayButtonInModifyTask.add(buttonCancelInModifyTask);						
+		panelLayPageButtonInModifyTask.add(buttonConfirmInModifyTask);
+		panelLayPageButtonInModifyTask.add(Box.createRigidArea(new Dimension(20, 60)));    
+		panelLayPageButtonInModifyTask.add(buttonCancelInModifyTask);						
 
 		panelModifyTask.add( Box.createVerticalGlue() );
 		panelModifyTask.add(panelLayTaskNameInModifyTask);
@@ -419,7 +484,7 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 		panelModifyTask.add(Box.createVerticalStrut(10));  		
 		panelModifyTask.add(panelLayTaskLocationInModifyTask);
 		panelModifyTask.add(Box.createVerticalStrut(10));  		
-		panelModifyTask.add(panelLayButtonInModifyTask);
+		panelModifyTask.add(panelLayPageButtonInModifyTask);
 		panelModifyTask.add( Box.createVerticalGlue() );
 		
 		frameModifyTask.setContentPane(panelModifyTask);			
@@ -496,54 +561,140 @@ public class SwotSearchPanel extends JPanel implements ActionListener{
 			}
 			swotTaskListByDate.removeAll(deleteTaskList);
 			
+			commonList = new ArrayList<SwotTask>();
+			commonList.addAll(swotTaskListByDate);
+			
 			//表格显示数据
-			if(swotTaskListByDate.size() == 0)
+			if(commonList.size() == 0)
 				JOptionPane.showMessageDialog(null, "未查找到符合数据", "",JOptionPane.INFORMATION_MESSAGE);
+			
+			pageDivider = panelLayTableANDPageButton.getHeight() / 22; 
+			if(commonList.size() % pageDivider == 0)	//查询结果数量是每页数量的整数倍
+				pageSum = commonList.size() / pageDivider;
+			else
+				pageSum = commonList.size() / pageDivider + 1;
+			pageCurrent = 0;
+			
+			if(commonList.size() > pageDivider)
+				buttonNextPage.setEnabled(true);
+			
 			dtm = (DefaultTableModel)table.getModel(); 
 			dtm.setRowCount(0);			//清空原有数据
 			dtm.addRow(new Object[]{"", "", "", "", "", -1});
-			for(SwotTask swotTask:swotTaskListByDate) {
-				if(dtm.getValueAt(0, 0) == "") {
-					dtm.setValueAt(1, 0, 0);
-					dtm.setValueAt(swotTask.getTaskName(), 0, 1);
-					dtm.setValueAt(swotTask.getTaskDescription(), 0, 2);
-
-					if(swotTask.getArgueTime() != null) {
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-						String stringDate = sdf.format(swotTask.getArgueTime());
-						dtm.setValueAt(stringDate, 0, 3);
-					} else
-						dtm.setValueAt("", 0, 3);
-						
-					dtm.setValueAt(swotTask.getTaskLocation(), 0, 4);
-					dtm.setValueAt(swotTask.getTaskID(), 0, 5);
-				} else {
-					if(swotTask.getArgueTime() != null) {
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-						String stringDate = sdf.format(swotTask.getArgueTime());
-						dtm.addRow(new Object[]{dtm.getRowCount()+1, swotTask.getTaskName(), swotTask.getTaskDescription(), 
-								stringDate, swotTask.getTaskLocation(), swotTask.getTaskID()});		
-					} else
-						dtm.addRow(new Object[]{dtm.getRowCount()+1, swotTask.getTaskName(), swotTask.getTaskDescription(), 
-								"", swotTask.getTaskLocation(), swotTask.getTaskID()});		
+			for(int i = pageCurrent * pageDivider; i < pageCurrent * pageDivider + pageDivider; i++) {
+				if(i < commonList.size()){
+					if(dtm.getValueAt(0, 0) == "") {	//第一行
+						dtm.setValueAt(1, 0, 0);
+						dtm.setValueAt(commonList.get(i).getTaskName(), 0, 1);
+						dtm.setValueAt(commonList.get(i).getTaskDescription(), 0, 2);
+	
+						if(commonList.get(i).getArgueTime() != null) {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							String stringDate = sdf.format(commonList.get(i).getArgueTime());
+							dtm.setValueAt(stringDate, 0, 3);
+						} else
+							dtm.setValueAt("", 0, 3);
+							
+						dtm.setValueAt(commonList.get(i).getTaskLocation(), 0, 4);
+						dtm.setValueAt(commonList.get(i).getTaskID(), 0, 5);
+					} else {		//不是第一行
+						if(commonList.get(i).getArgueTime() != null) {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							String stringDate = sdf.format(commonList.get(i).getArgueTime());
+							dtm.addRow(new Object[]{dtm.getRowCount()+1, commonList.get(i).getTaskName(), commonList.get(i).getTaskDescription(), 
+									stringDate, commonList.get(i).getTaskLocation(), commonList.get(i).getTaskID()});		
+						} else
+							dtm.addRow(new Object[]{dtm.getRowCount()+1, commonList.get(i).getTaskName(), commonList.get(i).getTaskDescription(), 
+									"", commonList.get(i).getTaskLocation(), commonList.get(i).getTaskID()});		
+					}
 				}
 			}
+		}	
+		else if(e.getSource() == buttonPreviousPage) {
+			pageCurrent--;
+			dtm.setRowCount(0);			//清空原有数据
+			dtm.addRow(new Object[]{"", "", "", "", "", -1});
+			for(int i = pageCurrent * pageDivider; i < pageCurrent * pageDivider + pageDivider; i++) {		
+				if(i < commonList.size()){
+					if(dtm.getValueAt(0, 0) == "") {		//第一行
+						dtm.setValueAt(1, 0, 0);
+						dtm.setValueAt(commonList.get(i).getTaskName(), 0, 1);
+						dtm.setValueAt(commonList.get(i).getTaskDescription(), 0, 2);
+						
+						if(commonList.get(i).getArgueTime() != null) {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							String stringDate = sdf.format(commonList.get(i).getArgueTime());
+							dtm.setValueAt(stringDate, 0, 3);
+						} else
+							dtm.setValueAt("", 0, 3);
+							
+						dtm.setValueAt(commonList.get(i).getTaskLocation(), 0, 4);
+						dtm.setValueAt(commonList.get(i).getTaskID(), 0, 5);
+					} else{	     //不是第一行
+						if(commonList.get(i).getArgueTime() != null) {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							String stringDate = sdf.format(commonList.get(i).getArgueTime());
+							dtm.addRow(new Object[]{dtm.getRowCount()+1, commonList.get(i).getTaskName(), commonList.get(i).getTaskDescription(), 
+									stringDate, commonList.get(i).getTaskLocation(), commonList.get(i).getTaskID()});		
+						} else
+							dtm.addRow(new Object[]{dtm.getRowCount()+1, commonList.get(i).getTaskName(), commonList.get(i).getTaskDescription(), 
+									"", commonList.get(i).getTaskLocation(), commonList.get(i).getTaskID()});				
+					}
+				}
+			}
+			buttonNextPage.setEnabled(true);
+			if(pageCurrent == 0)
+				buttonPreviousPage.setEnabled(false);
 		}
-		
+		else if(e.getSource() == buttonNextPage) {
+			pageCurrent++;
+			dtm.setRowCount(0);			//清空原有数据
+			dtm.addRow(new Object[]{"", "", "", "", "", -1});
+			for(int i = pageCurrent * pageDivider; i < pageCurrent * pageDivider + pageDivider; i++) {		
+				if(i < commonList.size()){
+					if(dtm.getValueAt(0, 0) == "") {		//第一行
+						dtm.setValueAt(1, 0, 0);
+						dtm.setValueAt(commonList.get(i).getTaskName(), 0, 1);
+						dtm.setValueAt(commonList.get(i).getTaskDescription(), 0, 2);
+						
+						if(commonList.get(i).getArgueTime() != null) {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							String stringDate = sdf.format(commonList.get(i).getArgueTime());
+							dtm.setValueAt(stringDate, 0, 3);
+						} else
+							dtm.setValueAt("", 0, 3);
+							
+						dtm.setValueAt(commonList.get(i).getTaskLocation(), 0, 4);
+						dtm.setValueAt(commonList.get(i).getTaskID(), 0, 5);
+					} else{	     //不是第一行
+						if(commonList.get(i).getArgueTime() != null) {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							String stringDate = sdf.format(commonList.get(i).getArgueTime());
+							dtm.addRow(new Object[]{dtm.getRowCount()+1, commonList.get(i).getTaskName(), commonList.get(i).getTaskDescription(), 
+									stringDate, commonList.get(i).getTaskLocation(), commonList.get(i).getTaskID()});		
+						} else
+							dtm.addRow(new Object[]{dtm.getRowCount()+1, commonList.get(i).getTaskName(), commonList.get(i).getTaskDescription(), 
+									"", commonList.get(i).getTaskLocation(), commonList.get(i).getTaskID()});				
+					}
+				}
+			}
+			buttonPreviousPage.setEnabled(true);
+			System.out.println(pageSum+"  current"+pageCurrent+" divider"+pageDivider);
+			if(pageSum <= pageCurrent + 1)
+				buttonNextPage.setEnabled(false);
+		}
 		else if(e.getSource() == buttonDeleteSwotTask) {
 			if(table.getValueAt(0, 0) != "") 
 				deleteTask();
 			else
 				JOptionPane.showMessageDialog(null, "当前表格无内容，无法做删除操作", "",JOptionPane.INFORMATION_MESSAGE);
-		}
-		
+		}	
 		else if(e.getSource() == buttonModifySwotTask) {
 			if(table.getValueAt(0, 0) != "") 
 				modifyTask();
 			else
 				JOptionPane.showMessageDialog(null, "当前表格无内容，无法做修改操作", "",JOptionPane.INFORMATION_MESSAGE);
-		}
-		
+		}	
 		else if(e.getSource() == buttonConfirmInModifyTask) {
 			
 			Calendar calendar = Calendar.getInstance();

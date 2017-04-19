@@ -159,7 +159,7 @@ public class SwotTaskDAO implements SwotTaskDAOInterface {
 		try{			
 			session = HibernateTool.getSession();
 			transaction = (Transaction) session.beginTransaction();
-			String hql="from SwotTask where taskName like :taskName";	
+			String hql="from SwotTask where taskName like :taskName order by argueTime desc";	
 			Query query = session.createQuery(hql);
 			query.setParameter("taskName", "%"+nameString+"%");
 			swotTaskList = (List<SwotTask>)query.list();
@@ -191,7 +191,7 @@ public class SwotTaskDAO implements SwotTaskDAOInterface {
 		try{			
 			session = HibernateTool.getSession();
 			transaction = (Transaction) session.beginTransaction();
-			String hql="from SwotTask where taskLocation like :taskLocation";	
+			String hql="from SwotTask where taskLocation like :taskLocation order by argueTime desc";	
 			Query query = session.createQuery(hql);
 			query.setParameter("taskLocation", "%"+locationString+"%");
 			swotTaskList = (List<SwotTask>)query.list();
@@ -227,21 +227,21 @@ public class SwotTaskDAO implements SwotTaskDAOInterface {
 			Query query = null;
 			
 			if(startDate == null && endDate != null ) {
-				hql = "from SwotTask where argueTime <:endDate";
+				hql = "from SwotTask where argueTime <:endDate order by	argueTime desc";
 				query = session.createQuery(hql);
 				query.setParameter("endDate", endDate);
 			}
 			else if(startDate != null && endDate == null) {
-				hql = "from SwotTask where argueTime >:startDate";	
+				hql = "from SwotTask where argueTime >:startDate order by argueTime desc";	
 				query = session.createQuery(hql);
 				query.setParameter("startDate", startDate);
 			}
 			else if(startDate == null && endDate == null) {
-				hql = "from SwotTask";	
+				hql = "from SwotTask order by argueTime desc";	
 				query = session.createQuery(hql);
 			}
 			else {
-				hql = "from SwotTask where argueTime between :startDate and :endDate";
+				hql = "from SwotTask where argueTime between :startDate and :endDate order by argueTime desc";
 				query = session.createQuery(hql);
 				query.setParameter("startDate", startDate);
 				query.setParameter("endDate", endDate);

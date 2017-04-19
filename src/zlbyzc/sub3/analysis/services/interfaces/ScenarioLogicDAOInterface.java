@@ -16,5 +16,5 @@ public interface ScenarioLogicDAOInterface {
 	public boolean deleteLogicByID(int id);
 	public ScenarioLogic getLogicByID(int id);
 	public List<ScenarioLogic> getLogicByName(String nameString);
-	public List<ScenarioLogic> getAllLogics();
+	public List<ScenarioLogic> getAllLogics(ScenarioTask scenarioTask);
 }

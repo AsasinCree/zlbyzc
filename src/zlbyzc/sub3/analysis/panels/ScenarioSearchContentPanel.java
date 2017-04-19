@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
@@ -28,10 +29,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+
+import org.liukan.mgraph.mgraphx;
 
 import zlbyzc.sub3.analysis.entities.ScenarioLogic;
 import zlbyzc.sub3.analysis.entities.ScenarioProperty;
@@ -93,6 +99,22 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 	private JScrollPane spTableDevelopment;	
 	private JScrollPane spTableResult;	
 	
+	private ScenarioGraphPanel scenarioGraphPanel;
+	
+	//显示标签节点
+	private Object nodeFocus;
+	private Object nodeKeyFactor;
+	private Object nodeDrivingpower;
+	private Object nodeUncertainties;
+	private Object nodeDevelopment;
+	private Object nodeResult;
+	
+	private static mgraphx graph;
+	private int nodeWidth;
+	private int nodeHeight;
+	private int panelWidth;
+	private int panelHeight;
+	
 	//右键菜单
 	private JPopupMenu popupMenu;
 	private JMenuItem popMenuItemAddProperty;
@@ -153,7 +175,8 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 	
 		panelTableViewInTabbedPane = new JPanel();
 		panelTableViewInTabbedPane.setLayout(new BorderLayout());
-		panelTestViewInTabbedPane = new JPanel();		
+		panelTestViewInTabbedPane = new JPanel();	
+		panelTestViewInTabbedPane.setLayout(new BorderLayout());
 		
 		panelLayJInternalFrameInTableView = new JPanel();		
 		panelLayButtonInTableView = new JPanel();		
@@ -191,6 +214,16 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 			}
 		});
 		
+		tabbedPane.addChangeListener(new ChangeListener(){
+			   public void stateChanged(ChangeEvent e){
+			    JTabbedPane tabbedPane = (JTabbedPane)e.getSource();
+			    int selectedIndex = tabbedPane.getSelectedIndex();
+			    
+			    if(selectedIndex == 1)
+			    	refreshPanelGraphViewInTabbedPane();
+			   }
+		});
+		
 		jifFocus = initializeJInternalFrame("决策焦点");
 		jifKeyFactor = initializeJInternalFrame("关键因素");
 		jifDrivingpower = initializeJInternalFrame("驱动力量");
@@ -204,6 +237,8 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 		tableUncertainties = initializeTable("uncertainties");	
 		tableDevelopment = initializeTable("development");	
 		tableResult = initializeTable("result");
+		
+		scenarioGraphPanel = new ScenarioGraphPanel(scenarioTask);
 		
 		importData();
 			
@@ -239,7 +274,9 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 		jifResult.setContentPane(spTableResult);
 		
 		panelTableViewInTabbedPane.add(panelLayJInternalFrameInTableView, BorderLayout.CENTER);
-		panelTableViewInTabbedPane.add(panelLayButtonInTableView, BorderLayout.SOUTH);  
+		panelTableViewInTabbedPane.add(panelLayButtonInTableView, BorderLayout.SOUTH); 
+		
+		refreshPanelGraphViewInTabbedPane();
 		
 		tabbedPane.add(panelTableViewInTabbedPane, "表格");
 		tabbedPane.add(panelTestViewInTabbedPane,"图形");
@@ -329,8 +366,7 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 		
 	}
 	
-	public void importData() {
-		
+	public void importData() {		
 		ScenarioTaskDAOInterface scenarioTaskDAO = new ScenarioTaskDAO();
 		
 		List<ScenarioProperty> scenarioPropertyList = scenarioTaskDAO.getAllTaskProperties(scenarioTask);
@@ -346,14 +382,13 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 					dtm.setValueAt(scenarioProperty.getPropertyID(), 0, 2);
 				} else{	
 					dtm.addRow(new Object[]{dtm.getRowCount()+1, scenarioProperty.getPropertyContent(), scenarioProperty.getPropertyID()});		
-				}			
+				}		
 			}
 		}	
 		
 		List<ScenarioLogic> scenarioLogicList = scenarioTaskDAO.getAllTaskLogics(scenarioTask);
 		if(scenarioLogicList != null) {
 			for(ScenarioLogic scenarioLogic:scenarioLogicList) {
-				
 				dtm = (DefaultTableModel)tableDevelopment.getModel();
 				if(dtm.getValueAt(0, 0) == "") {
 					dtm.setValueAt(1, 0, 0);
@@ -361,25 +396,23 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 					dtm.setValueAt(scenarioLogic.getLogicID(), 0, 2);
 				} else{	
 					dtm.addRow(new Object[]{dtm.getRowCount()+1, scenarioLogic.getLogicContent(), scenarioLogic.getLogicID()});		
-				}			
+				}		
 			}
 		}	
 		
 		List<ScenarioResult> scenarioResultList = scenarioTaskDAO.getAllTaskResults(scenarioTask);
 		if(scenarioResultList != null) {
 			for(ScenarioResult scenarioResult:scenarioResultList) {
-				
-				dtm = (DefaultTableModel)tableDevelopment.getModel();
+				dtm = (DefaultTableModel)tableResult.getModel();
 				if(dtm.getValueAt(0, 0) == "") {
 					dtm.setValueAt(1, 0, 0);
 					dtm.setValueAt(scenarioResult.getResultContent(), 0, 1);
 					dtm.setValueAt(scenarioResult.getResultID(), 0, 2);
 				} else{	
 					dtm.addRow(new Object[]{dtm.getRowCount()+1, scenarioResult.getResultContent(), scenarioResult.getResultID()});		
-				}			
+				}	
 			}
 		}
-
 	}
 	
 	public void refreshPanelLayJInternalFrameInTableView() {		//可同时对总框架改变大小时做出内部jif大小相应调整
@@ -415,7 +448,17 @@ public class ScenarioSearchContentPanel extends JPanel implements ActionListener
 		desktop.add(jifResult);
 		
 		panelLayJInternalFrameInTableView.add(desktop);
+	}
+	
+	public void refreshPanelGraphViewInTabbedPane() {		//可同时对总框架改变大小时做出内部jif大小相应调整	
+		if(scenarioGraphPanel != null){
+			panelTestViewInTabbedPane.remove(scenarioGraphPanel);
+			scenarioGraphPanel = new ScenarioGraphPanel(scenarioTask);
+		}
 		
+		panelTestViewInTabbedPane.add(scenarioGraphPanel);
+		panelTestViewInTabbedPane.revalidate();
+		panelTestViewInTabbedPane.repaint();
 	}
 	
 	//将所有JInternalFrame设置为为无最小化以及未选中状态。解决在添加/删除/筛选参与者后  actorpanel 层次问题【未知缘由】

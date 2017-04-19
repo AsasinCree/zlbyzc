@@ -16,5 +16,5 @@ public interface ScenarioResultDAOInterface {
 	public boolean deleteResultByID(int id);
 	public ScenarioResult getResultByID(int id);
 	public List<ScenarioResult> getResultByName(String nameString);
-	public List<ScenarioResult> getAllResults();
+	public List<ScenarioResult> getAllResults(ScenarioTask scenarioTask);
 }

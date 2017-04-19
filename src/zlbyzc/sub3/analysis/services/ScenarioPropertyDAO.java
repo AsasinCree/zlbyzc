@@ -9,6 +9,7 @@ import org.hibernate.Transaction;
 
 import zlbyzc.sub3.analysis.entities.ScenarioProperty;
 import zlbyzc.sub3.analysis.entities.ScenarioTask;
+import zlbyzc.sub3.analysis.entities.SwotActorProperty;
 import zlbyzc.sub3.analysis.services.interfaces.ScenarioPropertyDAOInterface;
 import zlbyzc.sub3.analysis.tools.HibernateTool;
 
@@ -133,10 +134,36 @@ public class ScenarioPropertyDAO implements ScenarioPropertyDAOInterface {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<ScenarioProperty> getAllPropertys() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ScenarioProperty> getAllPropertys(ScenarioTask scenarioTask) {
+		Session session = null;
+		Transaction transaction = null;
+		List<ScenarioProperty> scenarioPropertyList = null;
+		
+		try{			
+			session = HibernateTool.getSession();
+			transaction = (Transaction) session.beginTransaction();
+			String hqlString = "from ScenarioProperty where scenarioTask=:scenarioTask";
+			Query query = session.createQuery(hqlString);
+			query.setParameter("scenarioTask", scenarioTask);
+			scenarioPropertyList = (List<ScenarioProperty>)query.list();
+			
+			transaction.commit();
+			return scenarioPropertyList;	
+			
+		}catch(Exception e){			
+			e.printStackTrace();	
+			transaction.commit();
+			return scenarioPropertyList;
+			
+		}finally{			
+			if(transaction != null)
+				transaction =null;
+			if(session != null)
+				HibernateTool.closeSession(session);
+		}
+		
 	}
 
 }

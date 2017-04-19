@@ -10,6 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -28,6 +30,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.table.DefaultTableModel;
@@ -37,6 +41,7 @@ import zlbyzc.sub3.analysis.entities.ScenarioLogic;
 import zlbyzc.sub3.analysis.entities.ScenarioProperty;
 import zlbyzc.sub3.analysis.entities.ScenarioResult;
 import zlbyzc.sub3.analysis.entities.ScenarioTask;
+import zlbyzc.sub3.analysis.entities.SwotActorProperty;
 import zlbyzc.sub3.analysis.services.ScenarioLogicDAO;
 import zlbyzc.sub3.analysis.services.ScenarioPropertyDAO;
 import zlbyzc.sub3.analysis.services.ScenarioResultDAO;
@@ -52,6 +57,7 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	private ScenarioTask scenarioTask;
+	private ScenarioGraphPanel scenarioGraphPanel;
 	
 	private JPanel panelTop;
 	private JPanel panelBottom;
@@ -61,19 +67,27 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 	JButton buttonDeleteContentInToolBar;
 	JButton buttonModifyContentInToolBar;
 	
+	//【示例】
+	List<ScenarioProperty> scenarioPropertyList = new ArrayList<ScenarioProperty>();
+	List<ScenarioLogic> scenarioLogicList = new ArrayList<ScenarioLogic>();
+	List<ScenarioResult> scenarioResultList = new ArrayList<ScenarioResult>();
+	
 	private JTabbedPane tabbedPane;
 	
 	private JPanel panelTableViewInTabbedPane;
-	private JPanel panelTestViewInTabbedPane;
+	private JPanel panelGraphViewInTabbedPane;
 	
 	//TableView
 	private JPanel panelLayJInternalFrameInTableView;
 	private JPanel panelLayButtonInTableView;
+	private JPanel panelLayExampleButtonInTableView;
 
 	private int flagStep;
 	private JButton buttonBack;
 	private JButton buttonNext;
 	private JButton buttonSave;	
+	private JButton buttonExample;		//【示例】
+	private JButton buttonClearExample;		//【示例清空】
 	
 	private JDesktopPane desktop;
 	private JInternalFrame jifFocus;
@@ -172,14 +186,25 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 		panelBottom = new JPanel();
 		panelBottom.setLayout(new BorderLayout());
 		
-		tabbedPane = new JTabbedPane();
+		tabbedPane = new JTabbedPane();		
+		tabbedPane.addChangeListener(new ChangeListener(){
+			   public void stateChanged(ChangeEvent e){
+			    JTabbedPane tabbedPane = (JTabbedPane)e.getSource();
+			    int selectedIndex = tabbedPane.getSelectedIndex();
+			    
+			    if(selectedIndex == 1)
+			    	refreshPanelGraphViewInTabbedPane();
+			   }
+		});
 	
 		panelTableViewInTabbedPane = new JPanel();
 		panelTableViewInTabbedPane.setLayout(new BorderLayout());
-		panelTestViewInTabbedPane = new JPanel();		
+		panelGraphViewInTabbedPane = new JPanel();
+		panelGraphViewInTabbedPane.setLayout(new BorderLayout(0, 0));	
 		
 		panelLayJInternalFrameInTableView = new JPanel();		
-		panelLayButtonInTableView = new JPanel();		
+		panelLayButtonInTableView = new JPanel();	
+		panelLayExampleButtonInTableView = new JPanel();
 		panelLayJInternalFrameInTableView.setLayout(new BorderLayout());
 	
 		panelLayJInternalFrameInTableView.addComponentListener(new ComponentListener() {
@@ -191,7 +216,7 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 				jifWidth = panelLayJInternalFrameInTableView.getSize().width;
 				jifHeight = panelLayJInternalFrameInTableView.getSize().height / 6 - 5;
 	
-				refreshPanelLayJInternalFrameInTableView();
+				refreshPanelTableViewInTabbedPane();
 				
 			}
 			
@@ -251,10 +276,15 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 		buttonBack = new JButton("返回");
 		buttonNext = new JButton("开始编辑");
 		buttonSave = new JButton("保存");
+		buttonExample = new JButton("示例");
+		buttonClearExample = new JButton("示例清空");
 		buttonBack.addActionListener(this);
 		buttonNext.addActionListener(this);
 		buttonSave.addActionListener(this);
+		buttonExample.addActionListener(this);
+		buttonClearExample.addActionListener(this);
         
+		scenarioGraphPanel = new ScenarioGraphPanel(scenarioTask);
 	}
 	
 	public void layoutComponent() {
@@ -277,15 +307,15 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 		jifDevelopment.setContentPane(spTableDevelopment);
 		jifResult.setContentPane(spTableResult);
 		
-	//	panelLayButtonInTableView.add(buttonBack);
+		panelLayButtonInTableView.add(buttonExample);
+		panelLayButtonInTableView.add(buttonClearExample);
 		panelLayButtonInTableView.add(buttonNext);
-//		panelLayButtonInTableView.add(buttonSave);
-		
+				
 		panelTableViewInTabbedPane.add(panelLayJInternalFrameInTableView, BorderLayout.CENTER);
 		panelTableViewInTabbedPane.add(panelLayButtonInTableView, BorderLayout.SOUTH);  
 		
 		tabbedPane.add(panelTableViewInTabbedPane, "表格");
-		tabbedPane.add(panelTestViewInTabbedPane,"图形");
+		tabbedPane.add(panelGraphViewInTabbedPane, "图形");
 		
 		panelBottom.add(tabbedPane);
 		/*-------------底部面板End-----------------*/
@@ -373,7 +403,7 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 		
 	}
 	
-	public void refreshPanelLayJInternalFrameInTableView() {		//可同时对总框架改变大小时做出内部jif大小相应调整
+	public void refreshPanelTableViewInTabbedPane() {		//可同时对总框架改变大小时做出内部jif大小相应调整
 		
 		//清空原有的参与者面板
 		if(desktop != null) {
@@ -406,7 +436,6 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 		desktop.add(jifResult);
 		
 		panelLayJInternalFrameInTableView.add(desktop);
-		
 	}
 	
 	//将所有JInternalFrame设置为为无最小化以及未选中状态。解决在添加/删除/筛选参与者后  actorpanel 层次问题【未知缘由】
@@ -426,8 +455,18 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 		} catch (PropertyVetoException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}		
+	}
+	
+	public void refreshPanelGraphViewInTabbedPane() {		
+		if(scenarioGraphPanel != null){
+			panelGraphViewInTabbedPane.remove(scenarioGraphPanel);
+			scenarioGraphPanel = new ScenarioGraphPanel(scenarioTask, scenarioPropertyList, scenarioLogicList, scenarioResultList);		//【示例修改处】
 		}
-			
+		
+		panelGraphViewInTabbedPane.add(scenarioGraphPanel);
+		panelGraphViewInTabbedPane.revalidate();
+		panelGraphViewInTabbedPane.repaint();
 	}
 	
 	public void addContent() {
@@ -523,7 +562,7 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 							
 			dtm = (DefaultTableModel)getSelectedTable().getModel();
 			dtm.removeRow(selectedTableRow);
-			
+		
 			if(getSelectedTable().getRowCount() == 0) {
 				dtm.addRow(new Object[]{"", "", -1});
 			}else {
@@ -962,8 +1001,7 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 				}
 				
 			}
-			else if(propertyType.equals("development")) {
-				
+			else if(propertyType.equals("development")) {			
 				ScenarioLogic scenarioLogic = new ScenarioLogic();
 				scenarioLogic.setLogicContent(textareaContentInAddContent.getText());
 				
@@ -977,11 +1015,9 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 					dtm.setValueAt(scenarioLogic.getLogicID(), 0, 2);
 				} else{	
 					dtm.addRow(new Object[]{dtm.getRowCount()+1, textareaContentInAddContent.getText(), scenarioLogic.getLogicID()});		
-				}
-				
+				}		
 			}
-			else if(propertyType.equals("result")) {
-				
+			else if(propertyType.equals("result")) {			
 				ScenarioResult scenarioResult = new ScenarioResult();
 				scenarioResult.setResultContent(textareaContentInAddContent.getText());
 				
@@ -995,8 +1031,7 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 					dtm.setValueAt(scenarioResult.getResultID(), 0, 2);
 				} else{	
 					dtm.addRow(new Object[]{dtm.getRowCount()+1, textareaContentInAddContent.getText(), scenarioResult.getResultID()});		
-				}
-				
+				}		
 			}
 			
 			buttonConfirmInAddContent.setText("继续添加");
@@ -1010,6 +1045,145 @@ public class ScenarioEditPanel extends JPanel implements ActionListener {
 			
 			frameAddContent.dispose();
 			
+		}
+		else if(e.getSource() == buttonExample)	{		
+			scenarioPropertyList = new ArrayList<ScenarioProperty>();
+			scenarioLogicList = new ArrayList<ScenarioLogic>();
+			scenarioResultList = new ArrayList<ScenarioResult>();
+			
+			ScenarioPropertyDAOInterface scenarioPropertyDAO = new ScenarioPropertyDAO();
+			ScenarioLogicDAOInterface scenarioLogicDAO = new ScenarioLogicDAO();
+			ScenarioResultDAOInterface scenarioResultDAO = new ScenarioResultDAO();
+			
+			//【示例属性内容添加~~~~start】
+			//第一个测试属性	focus
+			dtm = (DefaultTableModel)tableFocus.getModel();	
+			dtm.setValueAt(1, 0, 0);dtm.setValueAt("污染和生态破坏", 0, 1);dtm.setValueAt(1, 0, 2);		//第一行比较特殊
+			ScenarioProperty scenarioProperty0 = new ScenarioProperty();
+			scenarioProperty0.setPropertyType("focus");
+			scenarioProperty0.setPropertyContent("污染和生态破坏");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty0);
+
+			
+			//第二个测试属性		keyFactor
+			dtm = (DefaultTableModel)tableKeyFactor.getModel();
+			dtm.setValueAt(1, 0, 0);dtm.setValueAt("经济因素", 0, 1);dtm.setValueAt(1, 0, 2);		
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "邛海管理的政策因素", 2});		
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "人口因素", 3});
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "陆地水保", 4});
+			ScenarioProperty scenarioProperty2 = new ScenarioProperty();
+			scenarioProperty2.setPropertyType("keyfactor");
+			scenarioProperty2.setPropertyContent("经济因素");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty2);
+			ScenarioProperty scenarioProperty3 = new ScenarioProperty();
+			scenarioProperty3.setPropertyType("keyfactor");
+			scenarioProperty3.setPropertyContent("邛海管理的政策因素");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty3);
+			ScenarioProperty scenarioProperty4 = new ScenarioProperty();
+			scenarioProperty4.setPropertyType("keyfactor");
+			scenarioProperty4.setPropertyContent("人口因素");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty4);
+			ScenarioProperty scenarioProperty5 = new ScenarioProperty();
+			scenarioProperty5.setPropertyType("keyfactor");
+			scenarioProperty5.setPropertyContent("陆地水保");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty5);
+			
+			//第三个测试属性				drivingpower
+			dtm = (DefaultTableModel)tableDrivingpower.getModel();
+			dtm.setValueAt(1, 0, 0);dtm.setValueAt("经济发展（含财政负担）", 0, 1);dtm.setValueAt(1, 0, 2);		
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "政府相关计划与政策", 2});		
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "工程技术", 3});
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "外来影响", 4});
+			ScenarioProperty scenarioProperty6 = new ScenarioProperty();
+			scenarioProperty6.setPropertyType("drivingpower");
+			scenarioProperty6.setPropertyContent("经济发展（含财政负担）");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty6);
+			ScenarioProperty scenarioProperty7 = new ScenarioProperty();
+			scenarioProperty7.setPropertyType("drivingpower");
+			scenarioProperty7.setPropertyContent("政府相关计划与政策");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty7);
+			ScenarioProperty scenarioProperty8 = new ScenarioProperty();
+			scenarioProperty8.setPropertyType("drivingpower");
+			scenarioProperty8.setPropertyContent("工程技术");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty8);
+			ScenarioProperty scenarioProperty9 = new ScenarioProperty();
+			scenarioProperty9.setPropertyType("drivingpower");
+			scenarioProperty9.setPropertyContent("外来影响");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty9);
+			
+			//第四个测试属性	uncertainties
+			dtm = (DefaultTableModel)tableUncertainties.getModel();
+			dtm.setValueAt(1, 0, 0);dtm.setValueAt("社会发展", 0, 1);dtm.setValueAt(1, 0, 2);
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "外来影响", 2});		
+			ScenarioProperty scenarioProperty10 = new ScenarioProperty();
+			scenarioProperty10.setPropertyType("uncertainties");
+			scenarioProperty10.setPropertyContent("社会发展");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty10);
+			ScenarioProperty scenarioProperty11 = new ScenarioProperty();
+			scenarioProperty11.setPropertyType("uncertainties");
+			scenarioProperty11.setPropertyContent("外来影响");
+			scenarioPropertyDAO.addProperty(scenarioTask, scenarioProperty11);
+			
+			scenarioPropertyList.add(scenarioProperty0);
+			scenarioPropertyList.add(scenarioProperty2);
+			scenarioPropertyList.add(scenarioProperty3);
+			scenarioPropertyList.add(scenarioProperty4);
+			scenarioPropertyList.add(scenarioProperty5);
+			scenarioPropertyList.add(scenarioProperty6);
+			scenarioPropertyList.add(scenarioProperty7);
+			scenarioPropertyList.add(scenarioProperty8);
+			scenarioPropertyList.add(scenarioProperty9);
+			scenarioPropertyList.add(scenarioProperty10);
+			scenarioPropertyList.add(scenarioProperty11);
+						
+			//逻辑内容	
+			dtm = (DefaultTableModel)tableDevelopment.getModel(); 	
+			dtm.setValueAt(1, 0, 0);dtm.setValueAt("社会经济低速发展，强的政府决策", 0, 1);dtm.setValueAt(1, 0, 2);
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "社会经济低速发展，弱的政府决策", 2});		
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "社会经济高速发展，强的政府决策", 3});
+			dtm.addRow(new Object[]{dtm.getRowCount()+1, "社会经济高速发展，弱的政府决策", 4});
+			ScenarioLogic scenarioLogic0 = new ScenarioLogic();
+			scenarioLogic0.setLogicContent("社会经济低速发展，强的政府决策");
+			scenarioLogicDAO.addLogic(scenarioTask, scenarioLogic0);
+			ScenarioLogic scenarioLogic1 = new ScenarioLogic();
+			scenarioLogic1.setLogicContent("社会经济低速发展，弱的政府决策");
+			scenarioLogicDAO.addLogic(scenarioTask, scenarioLogic1);
+			ScenarioLogic scenarioLogic2 = new ScenarioLogic();
+			scenarioLogic2.setLogicContent("社会经济高速发展，强的政府决策");	
+			scenarioLogicDAO.addLogic(scenarioTask, scenarioLogic2);
+			ScenarioLogic scenarioLogic3 = new ScenarioLogic();
+			scenarioLogic3.setLogicContent("社会经济高速发展，弱的政府决策");	
+			scenarioLogicDAO.addLogic(scenarioTask, scenarioLogic3);
+			
+			scenarioLogicList.add(scenarioLogic0);
+			scenarioLogicList.add(scenarioLogic1);
+			scenarioLogicList.add(scenarioLogic2);
+			scenarioLogicList.add(scenarioLogic3);
+			
+			//结果内容		
+			dtm = (DefaultTableModel)tableResult.getModel();
+			dtm.setValueAt(1, 0, 0);dtm.setValueAt("流域发展会给邛海带来新的压力, 资金短缺和政府决策是制约\n邛海流域未来生态环境变化的重要因素。尽管国家和地方各级政府会\n给予一定的资金扶持, 但是资金短缺的问题仍然十分突出。\n因此, 需要对工程方案的优先次序进行排列和组合。根据邛海流域 IFMOP 模型\n的优化结果和项目效益综合分析可见, 污染源治理、生态恢复、生态移民、绿色体系建设工程、\n湖岸界桩控制区拆迁改造工程、湖滨区生态景观恢复与改造、森林生态建设、水土流失及泥石流防\n治工程以及加强对旅游资源的开发和管制, 是邛海流域近中期的优\n先项目, 而水资源开发和底泥疏浚等, 则是在资金充裕情况下的远期备选项目。", 0, 1);dtm.setValueAt(1, 0, 2);
+
+			ScenarioResult scenarioResult0 = new ScenarioResult();
+			scenarioResult0.setResultContent("流域发展会给邛海带来新的压力, 资金短缺和政府决策是制约\n邛海流域未来生态环境变化的重要因素。尽管国家和地方各级政府会\n给予一定的资金扶持, 但是资金短缺的问题仍然十分突出。\n因此, 需要对工程方案的优先次序进行排列和组合。根据邛海流域 IFMOP 模型\n的优化结果和项目效益综合分析可见, 污染源治理、生态恢复、生态移民、绿色体系建设工程、\n湖岸界桩控制区拆迁改造工程、湖滨区生态景观恢复与改造、森林生态建设、水土流失及泥石流防\n治工程以及加强对旅游资源的开发和管制, 是邛海流域近中期的优\n先项目, 而水资源开发和底泥疏浚等, 则是在资金充裕情况下的远期备选项目。");
+			scenarioResultDAO.addResult(scenarioTask, scenarioResult0);
+			
+			scenarioResultList.add(scenarioResult0);
+
+			//【示例属性内容添加~~~~end】
+		}
+		else if(e.getSource() == buttonClearExample)	{		//示例清空
+			dtm = (DefaultTableModel)tableFocus.getModel();dtm.setRowCount(0);dtm.addRow(new Object[]{"", "", -1});
+			dtm = (DefaultTableModel)tableKeyFactor.getModel();dtm.setRowCount(0);dtm.addRow(new Object[]{"", "", -1});
+			dtm = (DefaultTableModel)tableDrivingpower.getModel();dtm.setRowCount(0);dtm.addRow(new Object[]{"", "", -1});
+			dtm = (DefaultTableModel)tableUncertainties.getModel();dtm.setRowCount(0);dtm.addRow(new Object[]{"", "", -1});
+			dtm = (DefaultTableModel)tableDevelopment.getModel();dtm.setRowCount(0);dtm.addRow(new Object[]{"", "", -1});
+			dtm = (DefaultTableModel)tableResult.getModel();dtm.setRowCount(0);dtm.addRow(new Object[]{"", "", -1});
+			
+			scenarioPropertyList.clear();
+			scenarioLogicList.clear();
+			scenarioResultList.clear();
+			refreshPanelGraphViewInTabbedPane();
 		}
 	}	
 }

@@ -161,7 +161,7 @@ public class ScenarioTaskDAO implements ScenarioTaskDAOInterface {
 		try{			
 			session = HibernateTool.getSession();
 			transaction = (Transaction) session.beginTransaction();
-			String hql="from ScenarioTask where taskName like :taskName";	
+			String hql="from ScenarioTask where taskName like :taskName order by argueTime desc";	
 			Query query = session.createQuery(hql);
 			query.setParameter("taskName", "%"+nameString+"%");
 			scenarioTaskList = (List<ScenarioTask>)query.list();
@@ -193,7 +193,7 @@ public class ScenarioTaskDAO implements ScenarioTaskDAOInterface {
 		try{			
 			session = HibernateTool.getSession();
 			transaction = (Transaction) session.beginTransaction();
-			String hql="from ScenarioTask where taskLocation like :taskLocation";	
+			String hql="from ScenarioTask where taskLocation like :taskLocation order by argueTime desc";	
 			Query query = session.createQuery(hql);
 			query.setParameter("taskLocation", "%"+locationString+"%");
 			scenarioTaskList = (List<ScenarioTask>)query.list();
@@ -229,21 +229,21 @@ public class ScenarioTaskDAO implements ScenarioTaskDAOInterface {
 			Query query = null;
 			
 			if(startDate == null && endDate != null ) {
-				hql = "from ScenarioTask where argueTime <:endDate";
+				hql = "from ScenarioTask where argueTime <:endDate order by argueTime desc";
 				query = session.createQuery(hql);
 				query.setParameter("endDate", endDate);
 			}
 			else if(startDate != null && endDate == null) {
-				hql = "from ScenarioTask where argueTime >:startDate";	
+				hql = "from ScenarioTask where argueTime >:startDate order by argueTime desc";	
 				query = session.createQuery(hql);
 				query.setParameter("startDate", startDate);
 			}
 			else if(startDate == null && endDate == null) {
-				hql = "from ScenarioTask";	
+				hql = "from ScenarioTask order by argueTime desc";	
 				query = session.createQuery(hql);
 			}
 			else {
-				hql = "from ScenarioTask where argueTime between :startDate and :endDate";
+				hql = "from ScenarioTask where argueTime between :startDate and :endDate order by argueTime desc";
 				query = session.createQuery(hql);
 				query.setParameter("startDate", startDate);
 				query.setParameter("endDate", endDate);

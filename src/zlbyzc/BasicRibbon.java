@@ -68,18 +68,14 @@ import org.pushingpixels.flamingo.internal.utils.RenderingUtils;
 
 import zlbyzc.LookAndFeelSwitcher;
 import zlbyzc.gui.ImageTask;
-import zlbyzc.gui.SimpleSwingBrowser;
 import zlbyzc.gui.SpringUtilities;
 import zlbyzc.sub3.CommandExec;
 import zlbyzc.sub3.stats.statPy;
-import zlbyzc.sub3.stats.statR;
 import test.svg.transcoded.*;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
-//import chrriis.dj.nativeswing.swtimpl.NativeInterface;
-//import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
 import icy.resource.ResourceUtil;
 
 import java.net.MalformedURLException;
@@ -90,7 +86,6 @@ import static javafx.concurrent.Worker.State.FAILED;
 public class BasicRibbon extends JRibbonFrame {
 	protected Locale currLocale;
     protected RibbonTask statsTask ;
-    protected RibbonTask riskTask ;
 	protected ResourceBundle resourceBundle;	 
 	protected ResourceBundle messagesRes;
 	JSplitPane mainPane;
@@ -100,25 +95,6 @@ public class BasicRibbon extends JRibbonFrame {
 	public mainDesk getDesktopPane()
     {
         return maindesktop;
-    }
-	private List<JCommandButton> downloadButton ;
-	public statR statInFra;
-	//final JWebBrowser webBrowser;
-	private JCommandButton theStatsButton;
-	public void enableScriptDownload(boolean e){
-		downloadButton.get(0).setEnabled(e);
-	}
-	public void enableFormatDownload(boolean e){
-		for (JCommandButton jb:downloadButton)
-			jb.setEnabled(e);
-	}
-	public void enableStatsButt(boolean e){
-		theStatsButton.setEnabled(e);
-	}
-	SimpleSwingBrowser sSwingBrowser;
-	public SimpleSwingBrowser getHelpView()
-    {
-        return sSwingBrowser;
     }
 	protected class QuickStylesPanel extends JCommandButtonPanel {
 		public QuickStylesPanel() {
@@ -282,16 +258,9 @@ public class BasicRibbon extends JRibbonFrame {
 
 		result.startGroup();
 		
-		ResizableIcon r_icon=ImageTask.getResizableIconFromResource("/img/icons/rlang.png");
-		JCommandButton rButton = new JCommandButton("R", r_icon);
+		JCommandButton localFolderButton = new JCommandButton("打开脚本文件", new folder());
+		result.addCommandButton(localFolderButton, RibbonElementPriority.TOP);
 		
-		rButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartPy();	
-			}
-		});
-		result.addCommandButton(rButton, RibbonElementPriority.TOP);
 
 		JCommandButton savedFolderButton = new JCommandButton("保存脚本文件", new folder_saved_search());
 		result.addCommandButton(savedFolderButton, RibbonElementPriority.TOP);
@@ -526,33 +495,6 @@ public class BasicRibbon extends JRibbonFrame {
 		JCommandButton pythonButton = new JCommandButton("模糊综合评判", py_icon);
 		ResizableIcon egpy_icon=ImageTask.getResizableIconFromResource("/img/icons/dea.png");
 		JCommandButton egpythonButton = new JCommandButton("DEA数据包络", egpy_icon);
-		swotButton.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartAhp();	
-				
-			}
-		});
-		swotegButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartAnp();	
-			}
-		});
-		
-		pythonButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartfuzzy();	
-			}
-		});
-		
-		egpythonButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartdea();	
-			}
-		});
 		statsBand.addCommandButton(swotButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(swotegButton, RibbonElementPriority.TOP);
@@ -567,69 +509,13 @@ public class BasicRibbon extends JRibbonFrame {
 
 		return statsBand;
 	}	
-	protected JRibbonBand getJudgeRunBand() {
-		ResizableIcon stats_icon=ImageTask.getResizableIconFromResource("/img/icons/qjfx.png");
-		JRibbonBand statsBand = new JRibbonBand("查询", stats_icon);
-		statsBand.setExpandButtonKeyTip("FO");
-		RichTooltip expandRichTooltip = new RichTooltip();
-		expandRichTooltip.setTitle(resourceBundle
-				.getString("Clipboard.textBandTitle"));
-		expandRichTooltip.addDescriptionSection(resourceBundle
-				.getString("Clipboard.textBandTooltipParagraph1"));
-		statsBand.setExpandButtonRichTooltip(expandRichTooltip);
-		statsBand.setCollapsedStateKeyTip("ZC");
-
-		ResizableIcon ahprefer_icon=ImageTask.getResizableIconFromResource("/img/icons/refer.png");
-		JCommandButton ahpreferButton = new JCommandButton("AHP结果查询", ahprefer_icon);
-		ResizableIcon anprefer_icon=ImageTask.getResizableIconFromResource("/img/icons/refer.png");
-		JCommandButton anpreferButton = new JCommandButton("ANP结果查询", anprefer_icon);
-		ResizableIcon fuzzyrefer_icon=ImageTask.getResizableIconFromResource("/img/icons/refer.png");
-		JCommandButton fuzzyreferButton = new JCommandButton("模糊结果查询", fuzzyrefer_icon);
-		ResizableIcon dearefer_icon=ImageTask.getResizableIconFromResource("/img/icons/refer.png");
-		JCommandButton deareferButton = new JCommandButton("DEA结果查询", dearefer_icon);
-		ahpreferButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartAhpQuery();	
-			}
-		});
-		fuzzyreferButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartfuzzyrefer();	
-			}
-		});
-		deareferButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartdearefer();	
-			}
-		});
-		anpreferButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execStartanprefer();	
-			}
-		});
-		
-		statsBand.addCommandButton(ahpreferButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(anpreferButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(fuzzyreferButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(deareferButton, RibbonElementPriority.TOP);
-		
-		
-		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
-		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
-				.getControlPanel()));
-		resizePolicies.add(new CoreRibbonResizePolicies.Mid2Low(statsBand
-				.getControlPanel()));
-		statsBand.setResizePolicies(resizePolicies);
-
-		return statsBand;
-	}
+	
 	protected JRibbonBand getAnaBand() {
 		
-				
+		//做一次查询操作，为了解决初次访问数据库卡顿时间
+		zlbyzc.sub3.analysis.services.SwotTaskDAO swotTaskDAO = new zlbyzc.sub3.analysis.services.SwotTaskDAO();		
+		swotTaskDAO.getAllSwotTasks();		
+		
 		ResizableIcon stats_icon=ImageTask.getResizableIconFromResource("/img/icons/analysis_sub.png");
 		JRibbonBand statsBand = new JRibbonBand("请选择子模块", stats_icon,
 				new ExpandActionListener());
@@ -658,6 +544,7 @@ public class BasicRibbon extends JRibbonFrame {
 				cmdexec.execStartSearchSwot();	
 			}
 		});
+		
 		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/qjfx.png");
 		JCommandButton pythonButton = new JCommandButton("情景分析法", py_icon);
 		ResizableIcon egpy_icon=ImageTask.getResizableIconFromResource("/img/icons/qjfx-eg.png");
@@ -674,6 +561,7 @@ public class BasicRibbon extends JRibbonFrame {
 				cmdexec.execStartSearchScenario();	
 			}
 		});
+		
 		statsBand.addCommandButton(swotButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(swotegButton, RibbonElementPriority.MEDIUM);
@@ -703,44 +591,12 @@ public class BasicRibbon extends JRibbonFrame {
 		statsBand.setExpandButtonRichTooltip(expandRichTooltip);
 		statsBand.setCollapsedStateKeyTip("ZC");
 
-		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/matrixupdate.png");
-		JCommandButton pythonButton = new JCommandButton("完全信息静态博弈编辑", py_icon);
-		ResizableIcon py_icon2=ImageTask.getResizableIconFromResource("/img/icons/treeupdate.png");
-		JCommandButton pythonButton2 = new JCommandButton("其它博弈编辑", py_icon2);
-		ResizableIcon py_icon3=ImageTask.getResizableIconFromResource("/img/icons/matrixquery.png");
-		JCommandButton pythonButton3 = new JCommandButton("完全信息静态博弈查询", py_icon3);
-		ResizableIcon py_icon4=ImageTask.getResizableIconFromResource("/img/icons/treequery.png");
-		JCommandButton pythonButton4 = new JCommandButton("其它博弈查询", py_icon4);
-		
-		
-		pythonButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execGameMatrix();	
-			}
-		});
-		pythonButton2.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execGameTree();	
-			}
-		});
-		pythonButton3.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execGameMatrixQuery();	
-			}
-		});
-		pythonButton4.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execGameTreeQuery();	
-			}
-		});
+		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/fullgame.png");
+		JCommandButton pythonButton = new JCommandButton("完全信息博弈博弈", py_icon);
+		ResizableIcon py_icon2=ImageTask.getResizableIconFromResource("/img/icons/nofullgame.png");
+		JCommandButton pythonButton2 = new JCommandButton("不完全信息博弈博弈", py_icon2);
 		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(pythonButton2, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(pythonButton3, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(pythonButton4, RibbonElementPriority.TOP);
 
 		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
 		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
@@ -768,17 +624,24 @@ public class BasicRibbon extends JRibbonFrame {
 		statsBand.setCollapsedStateKeyTip("ZC");
 
 		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/python-144x144.png");
-		theStatsButton = new JCommandButton("统计分析", py_icon);
-		theStatsButton.addActionListener(new ActionListener() {
+		JCommandButton pythonButton = new JCommandButton("Python", py_icon);
+		ResizableIcon r_icon=ImageTask.getResizableIconFromResource("/img/icons/rlang.png");
+		JCommandButton rButton = new JCommandButton("R", r_icon);
+		pythonButton.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				cmdexec.execStartPy();	
+			}
+		});
+		rButton.addActionListener(new ActionListener() {
 			@Override
             public void actionPerformed(ActionEvent e) {
 				cmdexec.execStartR();	
 			}
 		});
 		
-		
-		statsBand.addCommandButton(theStatsButton, RibbonElementPriority.TOP);
-		//statsBand.addCommandButton(rButton, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
+		statsBand.addCommandButton(rButton, RibbonElementPriority.TOP);
 
 		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
 		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
@@ -791,9 +654,8 @@ public class BasicRibbon extends JRibbonFrame {
 	}	
 
 	protected JRibbonBand getStatsRunBand() {
-		downloadButton= new ArrayList<JCommandButton>();
 		ResizableIcon stats_icon=ImageTask.getResizableIconFromResource("/img/icons/stats.png");
-		JRibbonBand statsBand = new JRibbonBand("按指定格式将统计资料下载到本地", stats_icon,
+		JRibbonBand statsBand = new JRibbonBand("脚本运行", stats_icon,
 				new ExpandActionListener());
 		statsBand.setExpandButtonKeyTip("FO");
 		RichTooltip expandRichTooltip = new RichTooltip();
@@ -804,85 +666,21 @@ public class BasicRibbon extends JRibbonFrame {
 		statsBand.setExpandButtonRichTooltip(expandRichTooltip);
 		statsBand.setCollapsedStateKeyTip("ZC");
 
-		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/script.png");
-		JCommandButton pythonButton = new JCommandButton("程序脚本原始格式", py_icon);
-		pythonButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				if(statInFra!=null)
-				statInFra.download("files");	
-			}
-		});
-		ResizableIcon r_icon=ImageTask.getResizableIconFromResource("/img/icons/html.png");
-		JCommandButton rButton = new JCommandButton("网页格式", r_icon);
-		rButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				if(statInFra!=null)
-				statInFra.download("html");	
-			}
-		});
-		ResizableIcon im_icon=ImageTask.getResizableIconFromResource("/img/icons/rst.png");
-		JCommandButton imButton = new JCommandButton("reStructuredText", im_icon);
-		imButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				if(statInFra!=null)
-				statInFra.download("rst");	
-			}
-		});
+		ResizableIcon py_icon=ImageTask.getResizableIconFromResource("/img/icons/run.png");
+		JCommandButton pythonButton = new JCommandButton("运行", py_icon);
+		ResizableIcon r_icon=ImageTask.getResizableIconFromResource("/img/icons/runas.png");
+		JCommandButton rButton = new JCommandButton("以制定参数运行", r_icon);
+		ResizableIcon im_icon=ImageTask.getResizableIconFromResource("/img/icons/data-import.png");
+		JCommandButton imButton = new JCommandButton("导入数据", im_icon);
 		ResizableIcon ex_icon=ImageTask.getResizableIconFromResource("/img/icons/export-data.png");
-		JCommandButton exButton = new JCommandButton("Notebook格式", ex_icon);
-		exButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				if(statInFra!=null)
-				statInFra.download("notebook");	
-			}
-		});
+		JCommandButton exButton = new JCommandButton("导出数据", ex_icon);
 		
-		ResizableIcon md_icon=ImageTask.getResizableIconFromResource("/img/icons/md.png");
-		JCommandButton mdButton = new JCommandButton("MarkDown", md_icon);
-		mdButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				if(statInFra!=null)
-				statInFra.download("markdown");	
-			}
-		});
-		ResizableIcon pdf_icon=ImageTask.getResizableIconFromResource("/img/icons/pdf.png");
-		JCommandButton pdfButton = new JCommandButton("PDF", pdf_icon);
-		pdfButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				if(statInFra!=null)
-				statInFra.download("pdf");	
-			}
-		});
-		pdfButton.setEnabled(false);
-		exButton.setEnabled(false);
-		pythonButton.setEnabled(false);
-		rButton.setEnabled(false);
-		imButton.setEnabled(false);
-		mdButton.setEnabled(false);
-		downloadButton.add(pythonButton);
-		downloadButton.add(exButton);
-		
-		downloadButton.add(rButton);
-		downloadButton.add(imButton);
-		downloadButton.add(mdButton);
-		downloadButton.add(pdfButton);
+
+		statsBand.addCommandButton(imButton, RibbonElementPriority.TOP);
 		
 		statsBand.addCommandButton(pythonButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(exButton, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(rButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(imButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(mdButton, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(pdfButton, RibbonElementPriority.TOP);
-		
-		
-		
-		
+		statsBand.addCommandButton(exButton, RibbonElementPriority.TOP);
 		
 		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
 		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
@@ -911,33 +709,13 @@ public class BasicRibbon extends JRibbonFrame {
 		
 		ResizableIcon py_icon2=ImageTask.getResizableIconFromResource("/img/icons/mjc.png");
 		JCommandButton pythonButton2 = new JCommandButton("马尔科夫决策", py_icon2);
-		pythonButton2.addActionListener(new ActionListener() {
-			@Override
-	         public void actionPerformed(ActionEvent e) {
-			cmdexec.mjc();	
-				}
-			});
 		ResizableIcon py_icon3=ImageTask.getResizableIconFromResource("/img/icons/jctree.png");
 		JCommandButton pythonButton3 = new JCommandButton("决策树", py_icon3);
-		pythonButton3.addActionListener(new ActionListener() {
-			@Override
-	         public void actionPerformed(ActionEvent e) {
-			cmdexec.jcs();	
-				}
-			});
-		ResizableIcon py_icon4=ImageTask.getResizableIconFromResource("/img/icons/duozhunze.png");
-		JCommandButton pythonButton4 = new JCommandButton("多准则", py_icon4);
-		pythonButton4.addActionListener(new ActionListener() {
-			@Override
-	         public void actionPerformed(ActionEvent e) {
-			cmdexec.duozhunze();	
-				}
-			});
+		
 		
 		statsBand.addCommandButton(pythonButton2, RibbonElementPriority.TOP);
 		statsBand.addCommandButton(pythonButton3, RibbonElementPriority.TOP);
-		statsBand.addCommandButton(pythonButton4, RibbonElementPriority.TOP);
-		
+
 		List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
 		resizePolicies.add(new CoreRibbonResizePolicies.Mirror(statsBand
 				.getControlPanel()));
@@ -963,23 +741,10 @@ public class BasicRibbon extends JRibbonFrame {
 		riskBand.setCollapsedStateKeyTip("ZC");
 
 		ResizableIcon lec_icon=ImageTask.getResizableIconFromResource("/img/icons/lec.png");
-JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
-		
-		// added by shenhui 添加LEC actionlistener, 2016-04-09
-		lecButton.addActionListener(new ActionListener() {
-			@Override
-            public void actionPerformed(ActionEvent e) {
-				cmdexec.execriskcontrolLec();	
-			}
-		});
+		JCommandButton lecButton = new JCommandButton("LEC法", lec_icon);
 		ResizableIcon riskMat_icon=ImageTask.getResizableIconFromResource("/img/icons/riskMat.png");
 		JCommandButton riskMatButton = new JCommandButton("风险矩阵法", riskMat_icon);
-		riskMatButton.addActionListener(new ActionListener() {
-			@Override
-         public void actionPerformed(ActionEvent e) {
-		cmdexec.execriskmatrix();	
-			}
-		});
+		
 		riskBand.addCommandButton(lecButton, RibbonElementPriority.TOP);
 		riskBand.addCommandButton(riskMatButton, RibbonElementPriority.TOP);
 
@@ -992,56 +757,7 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 
 		return riskBand;
 	}	
-	//added by shenhui 风险查询按钮及功能，2016-04-11
-		protected JRibbonBand getRiskfindBand(){
-			ResizableIcon lec_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_sub.png");
-			JRibbonBand riskBandfind = new JRibbonBand("查询", lec_icon,
-					new ExpandActionListener());
-			riskBandfind.setExpandButtonKeyTip("FO");
-			RichTooltip expandRichTooltip = new RichTooltip();
-			expandRichTooltip.setTitle(resourceBundle
-					.getString("Clipboard.textBandTitle"));
-			expandRichTooltip.addDescriptionSection(resourceBundle
-					.getString("Clipboard.textBandTooltipParagraph1"));
-			riskBandfind.setExpandButtonRichTooltip(expandRichTooltip);
-			riskBandfind.setCollapsedStateKeyTip("ZC");
-			
-			// LEC查询
-			ResizableIcon riskLecFind_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_lecfind.png");
-			JCommandButton riskLecFindButton = new JCommandButton("LEC查询", riskLecFind_icon);
-			
-			riskLecFindButton.addActionListener(new ActionListener() {
-				@Override
-	            public void actionPerformed(ActionEvent e) {
-					cmdexec.execriskLecFind();	
-				}
-			});
-			
-			
-			
-			//风险矩阵查询
-			ResizableIcon riskMatFind_icon=ImageTask.getResizableIconFromResource("/img/icons/risk_lecfind.png");
-			JCommandButton riskMatFindButton = new JCommandButton("风险矩阵查询", riskMatFind_icon);
-			riskMatFindButton.addActionListener(new ActionListener() {
-				@Override
-	            public void actionPerformed(ActionEvent e) {
-					cmdexec.execriskmatrixFind();	
-				}
-			});
-			
-			riskBandfind.addCommandButton(riskLecFindButton, RibbonElementPriority.TOP);
-			riskBandfind.addCommandButton(riskMatFindButton, RibbonElementPriority.TOP);
-		
-			List<RibbonBandResizePolicy> resizePolicies = new ArrayList<RibbonBandResizePolicy>();
-			resizePolicies.add(new CoreRibbonResizePolicies.Mirror(riskBandfind
-					.getControlPanel()));
-			resizePolicies.add(new CoreRibbonResizePolicies.Mid2Low(riskBandfind
-					.getControlPanel()));
-			riskBandfind.setResizePolicies(resizePolicies);
-			
-			return riskBandfind;
-			
-		}
+	
 
 	protected RibbonContextualTaskGroup group1;
 	protected RibbonContextualTaskGroup group2;
@@ -1052,14 +768,6 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 
 	public BasicRibbon() {
 		super();
-		statInFra=null;
-		Properties props = System.getProperties();
-    	props.setProperty("nativeswing.webbrowser.xulrunner.home",
-    			System.getProperty("user.dir")+File.separator+
-    			"libs"+File.separator+"xulrunner31");
-    	//System.out.println();
-    	//NativeInterface.open();
-		//webBrowser = new JWebBrowser(JWebBrowser.useXULRunnerRuntime());
 		maindesktop=new mainDesk(this);
 		setApplicationIcon(new applications_internet());
 		currLocale = Locale.getDefault();        
@@ -1075,27 +783,25 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 
 	public void configureRibbon() {
 		
-		
+		JRibbonBand riskBand = this.getRiskBand();
 		JRibbonBand anaBand = this.getAnaBand();
 		JRibbonBand judgeBand = this.getJudgeBand();
-		JRibbonBand judgeBandRun = this.getJudgeRunBand();
 		JRibbonBand jcBand = this.getJcBand();
 		JRibbonBand gameBand = this.getGameBand();
 		RibbonTask anaTask = new RibbonTask("战略分析", anaBand);
-		JRibbonBand riskBand = this.getRiskBand();
-		//RibbonTask riskTask = new RibbonTask("战略风险管控", riskBand);
+		
+		RibbonTask riskTask = new RibbonTask("战略风险管控", riskBand);
 		RibbonTask jcTask = new RibbonTask("战略决策", jcBand);
-		RibbonTask judgeTask = new RibbonTask("战略评价", judgeBand,judgeBandRun);
+		RibbonTask judgeTask = new RibbonTask("战略评价", judgeBand);
 		RibbonTask gameTask = new RibbonTask("战略博弈", gameBand);
 		
-		JRibbonBand riskBandFind = this.getRiskfindBand(); //added by shenhui,增加风险查询，2016-04-11
-		riskTask = new RibbonTask("战略风险管控", riskBand,riskBandFind);
+		
 		JRibbonBand statsBand = this.getStatsBand();
 		JRibbonBand statsBandRun = this.getStatsRunBand();
 		JRibbonBand statsBandDoc = this.getDocumentBand();
 		JRibbonBand statsBandFind = this.getFindBand();
 		JRibbonBand statsBandClip =this.getClipboardBand();
-		statsTask = new RibbonTask("战略统计分析", statsBand,statsBandRun);
+		statsTask = new RibbonTask("战略统计分析", statsBand,statsBandDoc,statsBandClip,statsBandFind,statsBandRun);
 		
 		LinkedList taskList=new LinkedList();
 		taskList.add(anaTask);
@@ -1104,7 +810,7 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 		taskList.add(judgeTask);
 		taskList.add(riskTask);
 		taskList.add(statsTask);
-		ImageTask task=new ImageTask(messagesRes,this.getRibbon(),taskList,cmdexec);
+		ImageTask task=new ImageTask(messagesRes,this.getRibbon(),taskList);
 		this.getRibbon().addTask(task);
 		
 		this.getRibbon().addTask(anaTask);
@@ -1140,34 +846,45 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 		this.getRibbon().addContextualTaskGroup(group1);
 		this.getRibbon().addContextualTaskGroup(group2);
 
-		//configureTaskBar();// TODO
+		configureTaskBar();
 
 		// application menu
-		configureApplicationMenu(); //TODO
+		configureApplicationMenu();
 
-//		JPanel controlPanel = new JPanel();
-//		controlPanel.setBorder(new EmptyBorder(20, 0, 0, 5));
-//		controlPanel.setBackground(new java.awt.Color(225, 225, 225));
-//		FormLayout lm = new FormLayout("right:pref, 4dlu, fill:pref:grow", "");
-//		DefaultFormBuilder builder = new DefaultFormBuilder(lm, controlPanel);		
-//		this.configureControlPanel(builder);
+		JPanel controlPanel = new JPanel();
+		controlPanel.setBorder(new EmptyBorder(20, 0, 0, 5));
+		controlPanel.setBackground(new java.awt.Color(225, 225, 225));
+		FormLayout lm = new FormLayout("right:pref, 4dlu, fill:pref:grow", "");
+		DefaultFormBuilder builder = new DefaultFormBuilder(lm, controlPanel);		
+		this.configureControlPanel(builder);
 		
-		JPanel leftPanel = new JPanel(new BorderLayout());
+		JPanel leftPanel = new JPanel(new SpringLayout());
 		
-//		final JFXPanel jfxPanel = new JFXPanel();
-/*
-		webBrowser.setMenuBarVisible(false);
-        webBrowser.setLocationBarVisible(false);
-		webBrowser.navigate(System.getProperty("user.dir")+File.separator+"doc"
-				+File.separator+"templet.html");*/
-		sSwingBrowser=new SimpleSwingBrowser("file:///"+System.getProperty("user.dir")+File.separator+"doc"
-				+File.separator+"templet.html","Help");
-		//builder.append(webBrowser);
+		final JFXPanel jfxPanel = new JFXPanel();
+		
+		builder.append(jfxPanel);
+		Platform.runLater(() -> {
+		    WebView webView = new WebView();
+		    //int width = getParent().getWidth();
+            //int height = getParent().getHeight();
 
-		leftPanel.add(new Label("Help:"),BorderLayout.PAGE_START);
-		leftPanel.add(sSwingBrowser, BorderLayout.CENTER);
-		//leftPanel.add(controlPanel);
+            webView.setMinSize(300, 800);
+            webView.setPrefSize(300, 1200);
+            
+            webView.getEngine().load(ImageTask.class.getResource("/doc/3.htm").toExternalForm());
+		    Scene wwwscene=new Scene(webView);
+		    jfxPanel.setScene(wwwscene);		    
+		    Platform.setImplicitExit(false);
+		    
+		});
 		
+		leftPanel.add(new Label("Help:"));
+		leftPanel.add(jfxPanel);
+		leftPanel.add(controlPanel);
+		SpringUtilities.makeCompactGrid(leftPanel, //parent
+                3, 1,
+                3, 3,  //initX, initY
+                3, 3); //xPad, yPad
 		centerPanel = new JPanel();
         centerPanel.setLayout(new BorderLayout());
         
@@ -1553,7 +1270,8 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 		this.getRibbon().setApplicationMenu(applicationMenu);
 
 		RichTooltip appMenuRichTooltip = new RichTooltip();
-		appMenuRichTooltip.setTitle(resourceBundle.getString("AppMenu.tooltip.title"));
+		appMenuRichTooltip.setTitle(resourceBundle
+				.getString("AppMenu.tooltip.title"));
 		appMenuRichTooltip.addDescriptionSection(resourceBundle
 				.getString("AppMenu.tooltip.paragraph1"));
 		try {
@@ -1603,7 +1321,44 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 
 		return transitionBand;
 	}
+	protected void configureControlPanel(DefaultFormBuilder builder) {
+		
 
+		final JCheckBox group1Visible = new JCheckBox("visible");
+		final JCheckBox group2Visible = new JCheckBox("visible");
+		group1Visible.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						getRibbon().setVisible(group1,
+								group1Visible.isSelected());
+					}
+				});
+			}
+		});
+		group2Visible.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						getRibbon().setVisible(group2,
+								group2Visible.isSelected());
+					}
+				});
+			}
+		});
+		builder.append("Group 1", group1Visible);
+		builder.append("Group 2", group2Visible);
+
+		builder.append("Look & feel", LookAndFeelSwitcher
+				.getLookAndFeelSwitcher(this));
+		JButton changeParagraph = new JButton("change");
+
+		builder.append("Change 'Paragraph'", changeParagraph);
+	}
 
 	protected JFlowRibbonBand getFontBand() {
 		JFlowRibbonBand fontBand = new JFlowRibbonBand(resourceBundle
@@ -1825,7 +1580,7 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 		statusBar = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
 		JLabel helper = new JLabel("Right click to show menu");
-		//statusBar.add(helper);
+		statusBar.add(helper);
 
 		JCommandButtonStrip alignStrip = new JCommandButtonStrip();
 		CommandToggleButtonGroup alignGroup = new CommandToggleButtonGroup();
@@ -1851,10 +1606,9 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 		alignGroup.add(alignFillButton);
 		alignStrip.add(alignFillButton);
 
-		//statusBar.add(alignStrip);
+		statusBar.add(alignStrip);
 
 		final Map<Integer, Boolean> selection = new TreeMap<Integer, Boolean>();
-		/*
 		statusBar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -1926,7 +1680,7 @@ JCommandButton lecButton = new JCommandButton("LEC分析法", lec_icon);
 				PopupPanelManager.defaultManager().addPopupListener(tracker);
 			}
 		});
-*/
+
 		this.add(statusBar, BorderLayout.SOUTH);
 	}
 

@@ -13,7 +13,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 //import javax.swing.JPanel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
@@ -35,13 +34,11 @@ import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
 import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
 
 import test.svg.transcoded.edit_paste;
-import zlbyzc.sub3.CommandExec;
 
 import java.awt.Graphics;  
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileInputStream;  
 import java.io.FileNotFoundException;  
 import java.io.IOException; 
@@ -119,19 +116,13 @@ public class ImageTask extends RibbonTask{
     	final static ResizableIcon judge_icon=ImageTask.getResizableIconFromResource("/img/icons/judge_sub.png");
     	final static ResizableIcon sim_icon=ImageTask.getResizableIconFromResource("/img/icons/sim_sub.png");
     	final static ResizableIcon jc_icon=ImageTask.getResizableIconFromResource("/img/icons/jc-sub.png");
-        public SubSystemBand(ResourceBundle mesg, JRibbon jr, LinkedList tasks
-        		,CommandExec cmdexec)
+        public SubSystemBand(ResourceBundle mesg, JRibbon jr, LinkedList tasks)
         {
         	super("请选择您要使用的子系统", ana_icon);
         	this.mesg=mesg;
     		JCommandButton simButton = new JCommandButton("战略仿真",
     				sim_icon);
-    		simButton.addActionListener(new ActionListener() {
-    			@Override 
-    			public void actionPerformed(ActionEvent e) {
-    				cmdexec.dyn_me();
-    			}
-    		}); 
+    		
     		JCommandButton anaButton = new JCommandButton("战略分析",
     				ana_icon);
     		anaButton.addActionListener(new ActionListener() {
@@ -139,14 +130,13 @@ public class ImageTask extends RibbonTask{
     			public void actionPerformed(ActionEvent e) {
     				//System.out.println("Taskbar statsButton activated");
     				jr.setSelectedTask((RibbonTask)tasks.getFirst());
-    				
-    				//做一次查询操作，为了解决初次访问数据库卡顿时间
-    				SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-    		    	zlbyzc.sub3.analysis.services.SwotTaskDAO swotTaskDAO = new zlbyzc.sub3.analysis.services.SwotTaskDAO();		
-    				swotTaskDAO.getAllSwotTasks();
-                        }
-                    });
+    			}
+    		});    	
+    		anaButton.addActionListener(new ActionListener() {
+    			@Override 
+    			public void actionPerformed(ActionEvent e) {
+    				//System.out.println("Taskbar statsButton activated");
+    				jr.setSelectedTask((RibbonTask)tasks.getFirst());
     			}
     		});    	
     
@@ -229,10 +219,9 @@ public class ImageTask extends RibbonTask{
         		//,zlbyzc.gui.SubstanceRibbonBand.getSubstanceRibbonTask()
         		);        
 	}
-	public ImageTask(ResourceBundle mesg, JRibbon jr, LinkedList tasks,
-			CommandExec cmdexec) {		
+	public ImageTask(ResourceBundle mesg, JRibbon jr, LinkedList tasks) {		
         super(NAME, new ImageRibbonBand(mesg),
-        		new SubSystemBand(mesg,  jr,  tasks,cmdexec)
+        		new SubSystemBand(mesg,  jr,  tasks)
         		//,zlbyzc.gui.SubstanceRibbonBand.getSubstanceRibbonTask(mesg)
         		); 
         this.mesg=mesg;//

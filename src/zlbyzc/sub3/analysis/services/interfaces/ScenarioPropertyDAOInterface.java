@@ -16,5 +16,5 @@ public interface ScenarioPropertyDAOInterface {
 	public boolean deletePropertyByID(int id);
 	public ScenarioProperty getPropertyByID(int id);
 	public List<ScenarioProperty> getPropertyByName(String nameString);
-	public List<ScenarioProperty> getAllPropertys();
+	public List<ScenarioProperty> getAllPropertys(ScenarioTask scenarioTask);
 }

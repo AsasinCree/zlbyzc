@@ -84,7 +84,7 @@ public class guiSubstanceRibbon extends BasicRibbon {
         super();
         
         //this.setTitle(messagesRes.getString("guiTitle"));
-        //TitlePane.editTitleBar(this, messagesRes.getString("guiTitle"));
+        TitlePane.editTitleBar(this, messagesRes.getString("guiTitle"));
     }
 
 	@Override
@@ -119,7 +119,23 @@ public class guiSubstanceRibbon extends BasicRibbon {
 				DecorationAreaType.FOOTER);
 	}
 
+	@Override
+	protected void configureControlPanel(DefaultFormBuilder formBuilder) {
+		super.configureControlPanel(formBuilder);
+		final JCheckBox heapPanel = new JCheckBox("show");
+		heapPanel.setSelected(false);
+		heapPanel.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+				SubstanceLookAndFeel.setWidgetVisible(getRootPane(), heapPanel
+						.isSelected(),
+						SubstanceWidgetType.TITLE_PANE_HEAP_STATUS);
+			}
+		});
+		formBuilder.append("Heap panel", heapPanel);
 	
+		
+	}
 	/**
 	 * 统一设置字体，父界面设置之后，所有由父界面进入的子界面都不需要再次设置字体
 	 */
@@ -215,9 +231,6 @@ public class guiSubstanceRibbon extends BasicRibbon {
 				});
 
 //				
-				//swotTaskDAO.getSwotTaskByID(1);
-	    				
-			    
 //				c.getRootPane().getInputMap(
 //						JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 //						KeyStroke.getKeyStroke("alt shift E"),

@@ -412,8 +412,7 @@ public class SwotActorPanel extends JPanel implements ActionListener {
 	}	
 	
 	//查询面板所用
-	public JTable getInsertTable(String PropertyType) {
-		
+	public JTable getInsertTable(String PropertyType) {		
 		if(PropertyType.equals("advantage")) {
 			return tableAdvantage;
 		}
@@ -426,9 +425,7 @@ public class SwotActorPanel extends JPanel implements ActionListener {
 		else if(PropertyType.equals("threat")) {
 			return tableThreat;
 		}
-		
-		return null;
-		
+		return null;	
 	}
 	
 	@Override
