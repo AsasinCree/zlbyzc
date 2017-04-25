@@ -1,4 +1,4 @@
-Ôªøpackage cn.whu.forum.analysis.views;
+package cn.whu.forum.analysis.views;
 
 import java.util.Calendar;
 
@@ -30,7 +30,7 @@ public class Test  extends JFrame{
 //		for(SwotActor swotActor:swotActorList) {
 //			SwotActorDAOInterface swotActorDAO = new SwotActorDAO();
 //			List<SwotActorProperty> actorPropertyList = swotActorDAO.getAllActorPropertys(swotActor);	
-//			for(SwotActorProperty actorProperty:actorPropertyList) {		//Âà†Èô§Â±ûÊÄß
+//			for(SwotActorProperty actorProperty:actorPropertyList) {		//…æ≥˝ Ù–‘
 //				SwotPropertyDAOInterface swotPropertyDAO = new SwotPropertyDAO();
 //				swotPropertyDAO.deletePropertyByID(actorProperty.getPropertyID());
 //			}	
@@ -39,21 +39,21 @@ public class Test  extends JFrame{
 //		swotTaskDAO.deleteTaskByID(1);
 		
 		Calendar calendar = Calendar.getInstance();
-        calendar.set(2023, 		//Âπ¥‰ªΩËá™Âä®Â§ö‰ΩôÔºå‰∏çÁü•ÁºòÁî±
+        calendar.set(2023, 		//ƒÍ∑›◊‘∂Ø∂‡”‡£¨≤ª÷™‘µ”…
         		1, 2, 0, 0, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         
 		SwotTask swotTask = new SwotTask();
-		swotTask.setTaskName("ÊµãËØïÁî®‰æã3");
+		swotTask.setTaskName("≤‚ ‘”√¿˝3");
 		swotTask.setArgueTime(calendar.getTime());	
 		swotTaskDAO.addTask(swotTask);
 //
 //		SwotActor swotActor = new SwotActor();
-//		swotActor.setActorName("ÂèÇ‰∏éËÄÖ0");
+//		swotActor.setActorName("≤Œ”Î’ﬂ0");
 //		swotActorDAO.addActor(swotTask, swotActor);
 //		
 //		SwotActor swotActor1 = new SwotActor();
-//		swotActor1.setActorName("ÂèÇ‰∏éËÄÖ1");
+//		swotActor1.setActorName("≤Œ”Î’ﬂ1");
 //		swotActorDAO.addActor(swotTask, swotActor1);
 		
 		

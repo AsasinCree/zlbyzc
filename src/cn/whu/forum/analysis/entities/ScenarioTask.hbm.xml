@@ -9,6 +9,7 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
+<!-- 情景分析法的案例映射文件 -->
 <hibernate-mapping>
 	<class name="cn.whu.forum.analysis.entities.ScenarioTask" table="sas_scenario_task">
 		<id name="taskID" column="task_id" type="integer">

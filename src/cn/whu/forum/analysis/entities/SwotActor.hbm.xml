@@ -9,6 +9,7 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
+<!-- SWOT分析法的参与者映射文件 -->
 <hibernate-mapping>
 	<class name="cn.whu.forum.analysis.entities.SwotActor" table="sas_swot_actor">
 		<id name="actorID" column="actor_id" type="integer">

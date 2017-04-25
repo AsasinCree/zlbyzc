@@ -1,4 +1,4 @@
-ï»¿package services.test;
+package services.test;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 
@@ -38,7 +38,7 @@ static int openFrameCount = 0;
   }
 
   private void jbInit() throws Exception {
-    jButton1.setText("å•å‡»æ­¤å¤„æ–°å¢å­çª—å£");
+    jButton1.setText("µ¥»÷´Ë´¦ĞÂÔö×Ó´°¿Ú");
     jButton1.addActionListener(new MyInternalFrame_jButton1_actionAdapter(this));
   }
 

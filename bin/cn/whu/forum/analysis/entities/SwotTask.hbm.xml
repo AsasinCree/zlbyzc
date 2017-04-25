@@ -9,6 +9,7 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
+<!-- SWOT分析法的映射文件 -->
 <hibernate-mapping>
 	<class name="cn.whu.forum.analysis.entities.SwotTask" table="sas_swot_task">
 		<id name="taskID" column="task_id" type="integer">
@@ -20,7 +21,7 @@
 		<property name="taskPeople" type="string" column="task_people" length="2000" />
 		<property name="taskTime" type="timestamp" column="task_time" />
 		<property name="argueTime" type="timestamp" column="argue_time" />
-		<property name="mark1" type="string" column="mark1" length="200" />
+		<property name="mark1" type="text" column="mark1"/>
 		<property name="mark2" type="string" column="mark2" length="200" />
 		<set name="actors" inverse="true"  cascade="all">
 			<key column="task_id"></key>

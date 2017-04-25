@@ -1,4 +1,4 @@
-﻿package services.test;
+package services.test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

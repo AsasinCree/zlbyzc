@@ -9,6 +9,7 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
+<!-- 情景分析法的结果字段映射文件 -->
 <hibernate-mapping>
 	<class name="cn.whu.forum.analysis.entities.ScenarioResult" table="sas_scenario_result">
 		<id name="resultID" column="result_id" type="integer">

@@ -1,11 +1,15 @@
-﻿package cn.whu.forum.analysis.tools;
+package cn.whu.forum.analysis.tools;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+/**
+ * 用于数据库创建
+ * @author cree
+ *
+ */
 public class HibernateTool {
-
 	private static Configuration configuration;
 	private static SessionFactory sessionFactory;
 
@@ -33,5 +37,4 @@ public class HibernateTool {
 			session.close();
 		}
 	}
-
 }

@@ -1,4 +1,4 @@
-ï»¿package services.test;
+package services.test;
 
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ public class TestUserDAO {
 	{
 		User user = new User();
 		user.setUserID(0);
-		user.setUserName("ç‹äº”");
+		user.setUserName("ÍõÎå");
 		user.setPassword("111111");
 		UserDAO ud = new UserDAO();
 		if ( ud.insertUser(user)){

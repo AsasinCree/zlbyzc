@@ -1,4 +1,4 @@
-﻿package services.test;
+package services.test;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
